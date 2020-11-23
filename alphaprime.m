@@ -7,14 +7,18 @@ StopTime = 1; % seconds
 t = (dt:dt:StopTime); % seconds 
 Freq = 5; % Sine wave frequency (hertz) 
 
-x = sin(2*pi*Freq*t)*10 %+randn(1,length(t))*3;
-y = sin(2*pi*Freq*t)*10 %+randn(1,length(t))*3;
+for aa = 1:10
 
-figure; hold on
-plot(t, x);
-plot(t, y)
+x = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
+y = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
+
+figure(1);
+subplot(2,5,aa); plot(t, x); hold on
+subplot(2,5,aa); plot(t, y);
+title(aa)
 
 dat = [x; y];   % N observers vs M samples
+
 
 
 %% Test with kriAplha function
@@ -23,16 +27,16 @@ dat = [x; y];   % N observers vs M samples
 
 % dat = [x; y];   % N observers vs M samples
 tic
-alpha1 = kriAlpha(dat, 'interval')
+alpha1(aa) = kriAlpha(dat, 'interval')
 toc
 %% New method
 % TO DO:
 % * Option to specify resolution
-N = 100;        % Default in linspace
+N = 200;        % Default in linspace
 
 %% Find joint probability function over time
 % Clean up this part. Naming is inconsitent and there are redundant parts.
-kern_res = [dt*1, range(dat(:))/20];
+kern_res = [dt*1, range(dat(:))/50];
       
 % Get joint density function over time
 gridx1 = linspace(min(dat(:)),max(dat(:)), N);   % Data axis. Evenly spaces mased on max/min of data
@@ -46,56 +50,65 @@ tmp = dat';
 yz = tmp(:);
 xz = repmat(t, 1, size(dat,1));
 Xz = [xz', yz];
-[dO, xi1, kn] =  ksdensity(Xz,xi,'Bandwidth', kern_res, 'PlotFcn','contour');
+[dO, xi1, kn] =  ksdensity(Xz,xi,'Bandwidth', kern_res);
 
 % Get probabilities
-po = dO/sum(dO);
-pO = reshape(po,length(gridx2),length(gridx1))';
+% po = dO/sum(dO);
+% pO = reshape(po,length(gridx2),length(gridx1))';
 
-% dO = reshape(dO,length(gridx2),length(gridx1))';
+dO = reshape(dO,length(gridx2),length(gridx1))';
 
 
 % Get marginal
 [dE, xi2] =  ksdensity(dat(:),gridx1,'Bandwidth', kern_res(2));
 
-pE = dE/(sum(dE));
-pgsum = sum(pO,2);
-
+% pE = dE/(sum(dE));
+dE = sum(dO,2);
 totals = sum(dO,1);
 
 % Plot joint 
 figure;
-subplot(1,20,1:3); plot(pE,xi2); axis tight; hold on
-plot(pgsum,xi2)
-subplot(1,20,5:20); imagesc(gridx2,gridx1,pO); colorbar
+subplot(1,20,1:3); plot(dE,xi2); axis tight; hold on
+% plot(pgsum,xi2)
+subplot(1,20,5:20); imagesc(gridx2,gridx1,dO); colorbar
 set(gca,'YDir','normal')
+
+n__ = sum(sum(dO));              %length(dat(:));
+nu_ = sum(dO,1);                 %size(dat,1);
 
 % Calculate alpha
 for tt = 1:length(gridx2)
-    u = gridx2(tt)
+    u = gridx2(tt);
+    
     for ii = 1:length(gridx1)-1
         c = gridx1(ii);
         kvals = gridx1(ii+1:end);
         deltas = (kvals-c).^2;
     
         % nominator
-        nuc = pO(ii,tt);
-        nuk = pO(ii+1:end, tt);
-        sumnucnuk(ii) = sum(nuc*nuk.*deltas');
+        nuc = dO(ii,tt);
+        nuk = dO(ii+1:end, tt);
+        Znucnuk(ii) = sum(nuc*nuk.*deltas');
 
         % denominator
-        n_c = pE(ii);
-        n_k = pE(ii+1:end);
-        sumncnk(ii) = sum(n_c*n_k.*deltas);
+        n_c = dE(ii);
+        n_k = dE(ii+1:end);
+        Zncnk(ii) = sum(n_c*n_k.*deltas');
         
     end
-    sumu(tt) = sum(sumnucnuk);
+    Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
 end
 
-Do = sum(sumu.*(totals-1));
-De = sum(sumncnk);
+Do = sum(Zu);
+De = sum(Zncnk) / (n__-1);
 
-alphaX = 1 - Do/De
+alphaX(aa) = 1 - (Do/De)
+
+end
+
+%%
+figure;
+scatter(alpha1,alphaX)
 
 %% Coinciedse matrix approach
 % Reshape the datamatric M (for M > 2)
