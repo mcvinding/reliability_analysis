@@ -7,22 +7,22 @@ StopTime = 1; % seconds
 t = (dt:dt:StopTime); % seconds 
 Freq = 5; % Sine wave frequency (hertz) 
 
-for aa = 1:10
+for aa = 0:10
 
 x = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
 y = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
 
-figure(1);
-subplot(2,5,aa); plot(t, x); hold on
-subplot(2,5,aa); plot(t, y);
-title(aa)
+% figure(1);
+% subplot(2,5,aa); plot(t, x); hold on
+% subplot(2,5,aa); plot(t, y);
+% title(aa)
 
 dat = [x; y];   % N observers vs M samples
 
 %% Test with kriAplha function
-tic
-alpha1(aa) = kriAlpha(dat, 'interval')
-toc
+% tic
+% alpha1(aa) = kriAlpha(dat, 'interval');
+% toc
 %% New method
 % TO DO:
 % * Option to specify resolution
@@ -70,12 +70,12 @@ set(gca,'YDir','normal');
 title(['Dens. aa=', num2str(aa)])
 
 % Plot probability
-figure; 
-subplot(1,20,1:3); plot(pE,xi2); axis tight; hold on
-plot(pE2,xi2)
-subplot(1,20,5:20); imagesc(tdim,gridx1,pO); colorbar
-set(gca,'YDir','normal');
-title(['Prob. aa=', num2str(aa)])
+% figure; 
+% subplot(1,20,1:3); plot(pE,xi2); axis tight; hold on
+% plot(pE2,xi2)
+% subplot(1,20,5:20); imagesc(tdim,gridx1,pO); colorbar
+% set(gca,'YDir','normal');
+% title(['Prob. aa=', num2str(aa)])
 
 n__ = sum(sum(dO));              %length(dat(:));
 nu_ = sum(dO,1);                 %size(dat,1);
@@ -110,8 +110,8 @@ for ii = 1:length(allvals)-1
 %     n_c = interp1(gridx1, dE2, c, 'linear');
 %     n_k = interp1(gridx1, dE2, kvals, 'linear');
 
-    n_c = interp1(gridx1, dE2, c, 'linear');
-    n_k = interp1(gridx1, dE2, kvals, 'linear');
+    n_c = interp1(gridx1, dE, c, 'linear');
+    n_k = interp1(gridx1, dE, kvals, 'linear');
 
     Zncnk(ii) = sum(n_c*n_k.*deltas);
 end
@@ -119,15 +119,17 @@ end
 Do = sum(Zu);
 Do2 = sum(Zu2);
 
-De = sum(Zncnk) % / (n__-1);
+De = sum(Zncnk); % / (n__-1);
 De2 = sum(Zncnk) / (n__-1);
 
 
-alphaD(aa) = 1 - (Do/De);
-alphaD2(aa) = 1 - (Do2/De2);
+alphaD(aa+1) = 1 - (Do/De);
+alphaD2(aa+1) = 1 - (Do2/De2);
+alphaD3(aa+1) = 1 - (Do2/De);
 
-dt = toc;
-fprintf('Calculating Alphaprime took %.2f sec\n', dt)
+T = toc;
+fprintf('Calculating Alphaprime took %.2f sec\n', T)
+end
 
 %% Probability approach
 tic
@@ -155,9 +157,9 @@ for tt = 1:length(tdim)
     Zu(tt) = sum(Znucnuk);
 end
 
-for tt = 1:length(tdim)
-    Zu(tt) = sum(Znucnuk./(nu_(tt)));
-end
+% for tt = 1:length(tdim)
+%     Zu(tt) = sum(Znucnuk./(nu_(tt)));
+% end
     
     
 Do = sum(Zu);
@@ -166,8 +168,8 @@ De = sum(Zncnk);
 alphaP(aa) = 1 - (Do/De);
 
 % timer
-dt = toc;
-fprintf('Calculating Alphaprime took %.2f sec\n', dt)
+T = toc;
+fprintf('Calculating Alphaprime took %.2f sec\n', T)
 
 % end
 
