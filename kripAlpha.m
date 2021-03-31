@@ -1,4 +1,4 @@
-function kripAlpha(dat, scale)
+function [alpha] = kripAlpha(dat, scale, makeplot)
 % Use as:
 %   alpha = kripAlpha(X, method)
 % Where 
@@ -6,70 +6,95 @@ function kripAlpha(dat, scale)
 %   scale:  The method for calculating the error (i.e. delta) for
 %           Krippendorpf's Alpha. Can be ...
 
-% Check inputs
-
-
 % Calculate alpha with hist3 approach (absolute values)
-% tic
-allvals = unique(dat);
-tdim = 1:size(dat,2);
+tic
 
-res = length(allvals); % data resolution
+% Check inputs
+if nargin < 2
+    error('Error: must have argument SCALE')
+elseif nargin < 3
+    makeplot = 0;
+end
 
-X = dat(:);
-Y = repmat(1:size(dat,2),size(dat,1),1);
-Y = Y(:);
+fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
 
-XY = [X, Y];    %Data vale, time bin
+% Get variables
+allvals = unique(dat(~isnan(dat)));
+tdim = size(dat, 2);
 
-% ll = linspace(min(dat(:)), max(dat(:)), res);
-ll = allvals;
-dO2 = hist3(XY, {ll, 1:size(dat,2)});
+Y = repmat(1:size(dat,2), size(dat,1), 1);
+XY = [dat(:), Y(:)];
+dO = hist3(XY, {allvals, 1:tdim});
+dE = sum(dO,2);
+n__ = sum(sum(dO));              %length(dat(:));
+nu_ = sum(dO,1);                 %size(dat,1);
 
-dE2 = sum(dO2,2);
-totals2 = sum(dO2,1);
+if makeplot
+    figure;
+    subplot(1,20,1:3); plot(dE, allvals); axis tight; hold on
+    subplot(1,20,5:20); imagesc(1:size(dat,2),allvals,dO); colorbar
+    set(gca,'YDir','normal')
+end
 
-% figure;
-% subplot(1,20,1:3); plot(dE2,ll); axis tight; hold on
-% % plot(pgsum,xi2)
-% subplot(1,20,5:20); imagesc(1:size(dat,2),ll,dO2); colorbar
-% set(gca,'YDir','normal')
-
-% P_vals = interp1(grid1, dE, allVals, 'spline');
-
-%
-n__ = sum(sum(dO2));              %length(dat(:));
-nu_ = sum(dO2,1);                 %size(dat,1);
-
-for tt = 1:length(tdim)
-%     u = gridx2(tt);
-    
-    for ii = 1:length(allvals)-1
-        c = allvals(ii);
-        kvals = allvals(ii+1:end);
-        deltas = (kvals-c).^2;
-    
-        % nominator
-        nuc = dO2(ii,tt);
-        nuk = dO2(ii+1:end, tt);
-        Znucnuk(ii) = sum(nuc*nuk.*deltas);
-
-        % denominator
-        n_c = dE2(ii);
-        n_k = dE2(ii+1:end);
-        Zncnk(ii) = sum(n_c*n_k.*deltas);
-        
+% nominator
+Zu = zeros(1, tdim);
+for tt = 1:tdim
+    if ~(nu_(tt) > 1)
+        continue
     end
+    % Find values
+    Znucnuk = zeros(1, length(allvals)-1);  % Initiate with zeroes.
+    vidx = find(dO(:,tt));                   % Find only index with observed values, all else will be zero anyway
+    
+    for ii = 1:length(vidx)-1
+        idx = vidx(ii);
+        c = allvals(idx);
+        kvals = allvals(vidx(ii+1:end));
+        switch scale
+            case 'nominal'
+                deltas = ~(kvals==c);
+            case 'ordinal'
+                deltas = nan(length(kvals),1);
+                for gg = 1:length(kvals)
+                    deltas(gg) = (sum(dE(ii:ii+gg)) - (dE(ii)+dE(ii+gg))/2)^2;
+                end                    
+            case 'interval'
+                deltas = (kvals-c).^2;
+        end
+
+        nuc = dO(idx,tt);
+        nuk = dO(vidx(ii+1:end), tt);
+        Znucnuk(idx) = sum(nuc*nuk.*deltas);    
+    end   
     Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
 end
-toc
+
+% denominator
+Zncnk = zeros(1, length(allvals));
+for ii = 1:length(allvals)-1
+    c = allvals(ii);
+    kvals = allvals(ii+1:end);
+    switch scale
+        case 'nominal'
+            deltas = ~(kvals==c);
+        case 'ordinal'
+            deltas = nan(length(kvals),1);
+            for gg = 1:length(kvals)
+                deltas(gg) = (sum(dE(ii:ii+gg)) - (dE(ii)+dE(ii+gg))/2)^2;
+            end                    
+        case 'interval'
+            deltas = (kvals-c).^2;
+    end        
+    n_c = dE(ii);
+    n_k = dE(ii+1:end);
+    Zncnk(ii) = sum(n_c*n_k.*deltas);
+end
 
 Do = sum(Zu);
 De = sum(Zncnk) / (n__-1);
 
-alphaH(aa) = 1 - (Do/De);
+alpha = 1 - (Do/De);
 
-end
-
-
-disp('done')
+dt = toc;
+fprintf('Calculation done (%.3f sec).\n', dt)
+%END

@@ -1,6 +1,6 @@
 function [alpha] = reliability_analysis(X, method)
 % Use as:
-%   alpha = kripAlpha(X, method)
+%   alpha = reliability_analysis(X, method)
 % Where 
 %   X:      N observers x M observations. For time series M = t
 %   method: The method for calculating the error (i.e. delta) for

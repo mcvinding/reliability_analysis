@@ -1,40 +1,206 @@
-% Test agreement  between two time-series
+function [alphaP] = alphaprime(dat, res)
+% Method based on approximation for faster computation
 
-% Generate two time-series
-fs      = 200; % Sampling frequency (samples per second) 
-dt      = 1/fs; % seconds per sample 
-StopTime = 1; % seconds 
-t = (dt:dt:StopTime); % seconds 
-Freq = 5; % Sine wave frequency (hertz) 
+%%
+if ~exist('res', 'var')
+    res = 0.01;     % 1% bin resolution
+elseif res <= 0 || res >= 0.5
+    error('Resultion must be larger than 0 and below 0.5')
+end
 
-for aa = 0:10
+%% Break
+N = round(1/res);               % Number of bins
+allvals = unique(dat(:));       % All unique values
 
-x = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
-y = sin(2*pi*Freq*t)*10+randn(1,length(t))*aa;
+%% Find histogram probability function over time
+% Get joint density function over time
+gridx1 = linspace(min(allvals), max(allvals), N);   % Data axis. Evenly spaces mased on max/min of data
+tdim = size(dat, 2);                             % "Time" axis (copy from real data)
 
-% figure(1);
-% subplot(2,5,aa); plot(t, x); hold on
-% subplot(2,5,aa); plot(t, y);
-% title(aa)
+% X = interp1(gridx1, gridx1, dat(:), 'spline');
+Y = repmat(1:size(dat, 2), size(dat, 1), 1);
+XY = [dat(:), Y(:)];
+dO = hist3(XY, {gridx1, 1:tdim}) ;
+dE = sum(dO, 2);
 
-dat = [x; y];   % N observers vs M samples
+% figure;
+figure;
+subplot(1,20,1:3); plot(dE, gridx1); axis tight; hold on
+subplot(1,20,5:20); imagesc(1:size(dat,2),gridx1,dO); colorbar
+set(gca,'YDir','normal')
 
-%% Test with kriAplha function
-% tic
-% alpha1(aa) = kriAlpha(dat, 'interval');
-% toc
-%% New method
-% TO DO:
-% * Option to specify resolution
-N = 100;        % 100 = Default in linspace
+n__ = sum(sum(dO));              %length(dat(:));
+nu_ = sum(dO, 1);                 %size(dat,1);
 
-%% Find joint probability function over time (
-% Clean up this part. Naming is inconsitent and there are redundant parts.
-kern_res = [dt*1, range(dat(:))/100];
+tic
+
+%% Interplation method
+for tt = 1:tdim
+    disp(tt)
+%     u = gridx2(tt);
+    tic
+    intpt = interp1(gridx1, dO(:,tt), allvals, 'nearest');
+    
+    % Clean up
+    X = gridx1; V = dO(:,tt); Xq = allvals;
+    Vq = interp1(X,V,Xq, 'pchip'); 
+    
+    % divide by zero? No there must be a minimum of one valid value!
+    c = sum(Vq)/nu_(tt);
+    pVqall = Vq/(n__*c);
+    Vqall = Vq/c;
+
+    pVall = V/n__;
+
+    subplot(1,2,1); plot(X,V,'o-',Xq,Vqall,':.')
+    subplot(1,2,2); plot(X,pVall,'o-',Xq,pVqall,':.')
+    
+    % find test
+    ZnucnukT = zeros(1, length(allvals)-1);  % Initiate with zeroes.
+    vidx = find(Vqall);                      % Find only index with observed values, all else will be zero anyway
       
+    for ii = 1:length(vidx)  
+        idx = vidx(ii);
+        c = allvals(idx);
+        kvals = allvals(idx+1:end);
+        deltas = (kvals-c).^2;
+
+%         nuc = intpt(ii);
+%         nuk = intpt(ii+1:end);     
+        nuc = Vqall(idx);
+        nuk = Vqall(idx+1:end);
+        ZnucnukT2(idx) = sum(nuc*nuk.*deltas);  
+    end
+    Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
+    toc
+end
+
+% denominator
+dEint = interp1(gridx1, dE, allvals, 'nearest');
+X = gridx1; V = dE; Xq = allvals;
+Vq = interp1(X,V,Xq, 'pchip'); 
+plot(X,V,'o-',Xq,Vq,':.')
+
+  
+for ii = 1:length(allvals)-1
+    c = allvals(ii);            % Real value
+    kvals = allvals(ii+1:end);
+    deltas = (kvals-c).^2;
+        
+    n_c = dEint(ii);
+    n_k = dEint(ii+1:end);
+    Zncnk(ii) = sum(n_c*n_k.*deltas);
+
+end
+
+toc
+
+Do = sum(Zu);
+De = sum(Zncnk) / (n__-1);
+
+alphaP = 1 - (Do/De);
+
+
+
+%% Smooth method
+N = 100
 % Get joint density function over time
 gridx1 = linspace(min(dat(:)),max(dat(:)), N);   % Data axis. Evenly spaces mased on max/min of data
 tdim = t;                                      % Time axis (copy from real data)
+
+X = interp1(gridx1, gridx1, dat(:), 'spline');
+Y = repmat(1:size(dat,2),size(dat,1),1);
+Y = Y(:);
+XY = [dat(:) Y];
+dO = hist3(XY, {gridx1, 1:size(dat,2)}) ;
+
+dE = sum(dO,2);
+
+res_pct = 0.01; % smooth half-width resolution in pct
+rx = 1/res_pct;
+nx = N/rx;          % Kernel width
+
+SIGMA = [nx 3];
+dOblur = imgaussfilt(dO, SIGMA, 'Padding', 'replicate');
+n__s = sum(sum(dOblur));              %length(dat(:));
+nu_s = sum(dOblur, 1);                 %size(dat,1);
+
+dEblur = sum(dOblur,2);
+
+% figure;
+figure;
+subplot(1,20,1:3); plot(dEblur,gridx1); axis tight; hold on
+subplot(1,20,5:20); imagesc(1:size(dat,2),gridx1,dOblur); colorbar
+set(gca,'YDir','normal')
+
+%% Calculate
+for tt = 1:length(tdim)
+%     u = gridx2(tt);
+    
+%     xt = Iblur(:,tt);
+   intpt = interp1(gridx1, dOblur(:,tt), allvals, 'pchip'); 
+   
+    X = gridx1; V = dOblur(:,tt); Xq = allvals;
+    Vq = interp1(X,V,Xq, 'nearest'); 
+    plot(X,V,'o-',Xq,Vq,':.')
+
+    for ii = 1:length(allvals)-1
+        c = allvals(ii);            % Real value
+        kvals = allvals(ii+1:end);
+        deltas = (kvals-c).^2;
+        
+        nuc = intpt(ii);
+        nuk = intpt(ii+1:end);     
+        Znucnuk(ii) = sum(nuc*nuk.*deltas);
+        
+    end
+    Zu(tt) = sum(Znucnuk./(nu_s(tt)-1));
+end
+
+% denominator
+dEint = interp1(gridx1, dE, allvals, 'nearest');
+dEblurint = interp1(gridx1, dEblur, allvals, 'nearest');
+
+X = gridx1; V = dE; Xq = allvals;
+Vq = interp1(X,V,Xq, 'spline'); 
+plot(X,V,'o-',Xq,Vq,':.')
+
+  
+for ii = 1:length(allvals)-1
+    c = allvals(ii);            % Real value
+    kvals = allvals(ii+1:end);
+    deltas = (kvals-c).^2;
+        
+    n_c = dEblurint(ii);
+    n_k = dEblurint(ii+1:end);
+    Zncnk(ii) = sum(n_c*n_k.*deltas);
+end
+        
+        
+toc
+
+Do = sum(Zu);
+De = sum(Zncnk) / (n__s-1);
+
+alphaP = 1 - (Do/De)
+
+
+
+
+
+
+
+
+%%
+
+A = accumarray([xr, tdim], 1, [N length(tdim)])
+
+
+kern_res = [dt*1, range(dat(:))/100];
+    
+gridx1 = linspace(min(dat(:)),max(dat(:)), N);   % Data axis. Evenly spaces mased on max/min of data
+tdim = t;   
+
 [x1,x2] = meshgrid(gridx1, tdim);
 x1 = x1(:);
 x2 = x2(:);
