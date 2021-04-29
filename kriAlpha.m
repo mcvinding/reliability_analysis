@@ -49,7 +49,7 @@ coinMatr=nan(length(allVals));
 for r=1:length(allVals)
     for c=r:length(allVals)
         val=0;
-        fprintf('r=%i, c=%i\n', r, c)
+%         fprintf('r=%i, c=%i\n', r, c)
         for d=1:size(data,2)
             %find number of pairs
             thisEx=data(:,d);

@@ -1,10 +1,12 @@
 function [alpha] = kripAlpha(dat, scale, makeplot)
+% Calculate Krippendorff's alpha using original approach.
 % Use as:
-%   alpha = kripAlpha(X, method)
+%   alpha = kripAlpha(X, method, makeplot)
 % Where 
-%   dat:    N observers x M observations. For time series M = t
-%   scale:  The method for calculating the error (i.e. delta) for
-%           Krippendorpf's Alpha. Can be ...
+%   dat:      N observers x M observations. For time series M = t
+%   scale:    The method for calculating the error (i.e. delta) for
+%             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, or INTERVAL.
+%   makeplot: Plot the data, 1 or 0 (default).
 
 % Calculate alpha with hist3 approach (absolute values)
 tic
@@ -17,6 +19,7 @@ elseif nargin < 3
 end
 
 fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
+scale = lower(scale);
 
 % Get variables
 allvals = unique(dat(~isnan(dat)));
@@ -29,6 +32,7 @@ dE = sum(dO,2);
 n__ = sum(sum(dO));              %length(dat(:));
 nu_ = sum(dO,1);                 %size(dat,1);
 
+% Optional plot
 if makeplot
     figure;
     subplot(1,20,1:3); plot(dE, allvals); axis tight; hold on

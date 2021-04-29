@@ -1,5 +1,5 @@
 function [alpha] = kripAlphaN2fast(dat)
-% Krippendorff's alpha N=2 fast method
+% Calculate Krippendorff's alpha N=2 fast method
 % Use as:
 %   alpha = kripAlpha(X)
 % Where 
@@ -10,6 +10,10 @@ if size(dat, 1) > 2
     error('Error: the \"N2fast\" method only works for N=2 observers. This dataset has %i.', size(dat, 1))
 else
     fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
+end
+
+if any(isnan(dat(:)))
+    error('Error: the \"N2fast\" method is invalid for data with missing cases.\nThis data has %i missing cases.', sum(isnan(dat(:))))
 end
 
 % Get variables
