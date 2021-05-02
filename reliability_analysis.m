@@ -10,7 +10,7 @@ function [alpha] = reliability_analysis(X, method)
 %            'ordinal': K's alpha for ORDINAL data using exact method.
 %            'nominal': K's alpha for NOMINAL data using exact method.
 %            'alphaprime': approximation of coincidence matrices using
-%               density calculation and interpolation. Only suitable for 
+%               density calculation by binning. Only suitable for 
 %               large datasets of INTERVAL data with arbitrary numerical 
 %               precision.
 %            'n2fast': fast computation of K's alpha for INTERVAL data with

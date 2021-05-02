@@ -48,7 +48,7 @@ for tt = 1:tdim
     end
     % Find values
     Znucnuk = zeros(1, length(allvals)-1);  % Initiate with zeroes.
-    vidx = find(dO(:,tt));                   % Find only index with observed values, all else will be zero anyway
+    vidx = find(dO(:,tt));                  % Find only index with observed values, all else will be zero anyway
     
     for ii = 1:length(vidx)-1
         idx = vidx(ii);
