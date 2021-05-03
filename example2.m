@@ -81,8 +81,15 @@ StopTimes = [1, 2, 4, 8, 10, 15, 20, 25, 30];
 fs          = 1000;               % Sampling frequency (samples per second) 
 dt          = 1/fs;              % seconds per sample 
 
+alpha2b = nan(nrun, length(StopTimes));
+alpha3b = nan(nrun, length(StopTimes));
+alphapb = nan(nrun, length(StopTimes));
+dT2b = nan(nrun, length(StopTimes));
+dT3b = nan(nrun, length(StopTimes));
+dTpb = nan(nrun, length(StopTimes));
+
 for ii = 1:nrun
-    fprintf('Run %i of %i...\n', aa, nrun)
+    fprintf('Run %i of %i...\n', ii, nrun)
     for aa = 1:length(StopTimes)
         t = (dt:dt:StopTimes(aa));
         fprintf('N = %i ... ', length(t))
@@ -98,9 +105,11 @@ for ii = 1:nrun
 %         dT1b(ii,aa) = toc;
 
         % New implementation
-        tic
-        alpha2b(ii,aa) = kripAlpha(dat, 'interval'); disp('done')
-        dT2b(ii,aa) = toc;
+        if ~(length(t) > 25000)  % Above this and my PC will crash
+            tic
+            alpha2b(ii,aa) = kripAlpha(dat, 'interval'); disp('done')
+            dT2b(ii,aa) = toc;
+        end
         
         % New fast implementation
         tic
@@ -117,8 +126,11 @@ disp('DONE')
 
 %%
 figure; hold on
-errorbar(1:10, mean(dT2b), std(dT2b)/2, 'bo-');
-errorbar(1:10, mean(dTpb), std(dTpb)/2, 'ro-')
-errorbar(1:10, mean(dT3b), std(dTpb)/2, 'ko-')
-
-set(gca, 'YScale', 'log')
+errorbar(StopTimes*fs, mean(dT2b), std(dT2b)/2, 'ko-');
+errorbar(StopTimes*fs, mean(dT3b), std(dTpb)/2, 'bo-');
+errorbar(StopTimes*fs, mean(dTpb), std(dTpb)/2, 'ro-');
+% set(gca, 'YScale', 'log')
+set(gcf, 'Position', [500, 500, 700, 500])
+legend('Alpha', 'Alpha (N=2, fast)', ['Alpha', char(39)], 'location','northwest')
+xlabel('Data points per observation'); ylabel('Time (s)')
+print('comparion_time','-dpng')
