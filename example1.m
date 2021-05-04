@@ -7,4 +7,10 @@ D = [1 2 3 3 2 4 4 1 2 5 1 nan];
 
 dat = [A; B; C; D];
 
+%% Get Krippendorff's Alpha
+alpha_int = kripAlpha(dat, 'interval'); disp('done')  % Assuming interval data
+alpha_ord = kripAlpha(dat, 'ordinal'); disp('done')   % Assuming ordinal data
 
+%% Approximation method (only interval and large datasets)
+% Does not really make sense for this data.
+alphap = alphaprime(dat); disp('done')                % Assuming interval data

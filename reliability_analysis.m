@@ -27,15 +27,15 @@ end
 
 % Check methos
 method = lower(method);
-if ~any(strcmp(method, {'alphaprime', 'interval', 'ordinal', 'nominal', 'n2fast'}))
+if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast'}))
     error('Error: method \"%s\" is not supported', upper(method))
 end
 
 % Switch methods and run
 switch(method)
-    case 'alphaprime'
+    case {'alphaprime', 'prime'}
         disp('Calculating Alpha with denisty approximation...')
-        alpha = alphaPrime(X);
+        alpha = alphaprime(X);
         
     case {'interval', 'ordinal', 'nominal'}
         fprintf('Calculating K´s Alpha for %s data with exact precision...\n', upper(method))
