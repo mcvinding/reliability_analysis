@@ -21,8 +21,13 @@ end
 fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
 scale = lower(scale);
 
+if ~any(contains({'nominal','ordinal','interval'}, scale))
+    error('Unknown scale of measurement');
+end
+
 % Get variables
 allvals = unique(dat(~isnan(dat)));
+if isa(allvals, 'logical'); allvals = int8(allvals); end;
 tdim = size(dat, 2);
 
 Y = repmat(1:size(dat,2), size(dat,1), 1);
