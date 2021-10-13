@@ -3,7 +3,8 @@ function [alpha] = kripAlphaN2fast(dat)
 % Use as:
 %   alpha = kripAlpha(X)
 % Where 
-%   dat:    N observers x M observations. For time series M = t
+%   dat:    N observers x M observations. For time series M = t. Note that
+%           this method only works for N=2.
 
 tic
 if size(dat, 1) > 2
