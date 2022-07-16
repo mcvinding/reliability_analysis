@@ -10,7 +10,6 @@ function [alpha] = kripAlpha(dat, scale, makeplot)
 %   makeplot: Plot the data, 1 or 0 (default = 0).
 
 % Calculate alpha with hist3 approach (absolute values)
-tic
 
 % Check inputs
 if nargin < 2
@@ -19,16 +18,16 @@ elseif nargin < 3
     makeplot = 0;
 end
 
-fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
+fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , size(dat, 2) )
 scale = lower(scale);
 
-if ~any(contains({'nominal','ordinal','interval'}, scale))
+if ~any(contains({'nominal','ordinal','interval','angle'}, scale))
     error('Unknown scale of measurement');
 end
 
 % Get variables
 allvals = unique(dat(~isnan(dat)));
-if isa(allvals, 'logical'); allvals = int8(allvals); end;
+if isa(allvals, 'logical'); allvals = int8(allvals); end
 tdim = size(dat, 2);
 
 Y = repmat(1:size(dat,2), size(dat,1), 1);
@@ -108,7 +107,4 @@ Do = sum(Zu);
 De = sum(Zncnk) / (n__-1);
 
 alpha = 1 - (Do/De);
-
-dt = toc;
-fprintf('Calculation done (%.3f sec).\n', dt)
 %END
