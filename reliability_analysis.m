@@ -9,6 +9,7 @@ function [alpha] = reliability_analysis(X, method)
 %            'interval': K's alpha for INTERVAL data using exact method.
 %            'ordinal': K's alpha for ORDINAL data using exact method.
 %            'nominal': K's alpha for NOMINAL data using exact method.
+%            'angle' : K's alpha for 
 %            'alphaprime': approximation of coincidence matrices using
 %               density calculation by binning. Only suitable for 
 %               large datasets of INTERVAL data with arbitrary numerical 
@@ -27,7 +28,7 @@ end
 
 % Check methos
 method = lower(method);
-if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast'}))
+if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast', 'angle'}))
     error('Error: method \"%s\" is not supported', upper(method))
 end
 
