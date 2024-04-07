@@ -17,7 +17,7 @@ elseif res <= 0 || res >= 0.5
     error('Resultion must be larger than 0 and below 0.5')
 end
 
-fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
+fprintf('This dataset has %i observers and %i data points.\n', size(dat, 1) , size(dat, 2) )
     
 % Init 
 N = round(1/res);                   % Number of bins

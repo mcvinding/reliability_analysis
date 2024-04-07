@@ -1,0 +1,11 @@
+# .gitigore.
+
+# Filetypes
+*.asv
+*.png
+*~
+
+# Folders
+old/
+sandbox/
+benchmarking/output/

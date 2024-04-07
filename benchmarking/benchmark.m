@@ -2,6 +2,7 @@
 addpath('/home/mikkel/reliability_analysis')
 
 %% Ordinal/binary data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 N = 1000;
 Nperm = 100;
 err = 0.0:0.005:0.5;  %  Percent disagreement
@@ -36,6 +37,7 @@ end
 
 figure(1); hold on
 errorbar(err, mean(alph_ord1), std(alph_ord1), 'b', 'MarkerSize',12);
+yline()
 
 set(gcf, 'Position', [500, 500, 700, 500])
 
