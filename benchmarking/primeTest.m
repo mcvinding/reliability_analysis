@@ -2,11 +2,12 @@
 % compared to absolute alpha
 %
 % Test agreement between two time-series: Sine-waves with random noise.
+addpath('/home/mikkel/reliability_analysis')
 
 %% Settings
 outdir = '/home/mikkel/reliability_analysis/benchmarking/output';
 
-%% Generate two time-series : settings
+%% Generate time-series settings
 nrun        = 100;
 StopTime    = 10;                % seconds 
 fs          = 1000;              % Sampling frequency (samples per second) 
