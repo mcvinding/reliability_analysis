@@ -6,10 +6,11 @@ function [alpha] = reliability_analysis(X, method)
 %   X:      N observers x M observations. For time series M = t.
 %   method: The method for calculating the error (i.e. delta) for
 %           Krippendorpf's Alpha. Options can be:
-%            'interval': K's alpha for INTERVAL data using exact method.
-%            'ordinal': K's alpha for ORDINAL data using exact method.
-%            'nominal': K's alpha for NOMINAL data using exact method.
-%            'angle' : K's alpha for 
+%            'interval': K's alpha for INTERVAL data using the exact method.
+%            'ordinal': K's alpha for ORDINAL data using the exact method.
+%            'nominal': K's alpha for NOMINAL data using the exact method.
+%            'angle' : K's alpha for PHASE data using the exact method.
+%            'ratio' : K's alpha for RATIO data using the exact method.
 %            'alphaprime': approximation of coincidence matrices using
 %               density calculation by binning. Only suitable for 
 %               large datasets of INTERVAL data with arbitrary numerical 
@@ -28,7 +29,7 @@ end
 
 % Check methos
 method = lower(method);
-if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast', 'angle'}))
+if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast', 'angle', 'ratio'}))
     error('Error: method \"%s\" is not supported', upper(method))
 end
 
@@ -38,13 +39,13 @@ switch(method)
         disp('Calculating Alpha with denisty approximation...')
         alpha = alphaprime(X);
         
-    case {'interval', 'ordinal', 'nominal'}
+    case {'interval', 'ordinal', 'nominal', 'ratio', 'angle'}
         fprintf('Calculating K´s Alpha for %s data with exact precision...\n', upper(method))
         alpha = kripAlpha(X, method);
         
     case 'n2fast'
         fprintf('Calculating K´s Alpha with fast method for N=2 and interval data')
-        alpha = kripAlphaN2fast(X);
+        alpha = kripAlphaN2fast(X);        
 end
         
 %END

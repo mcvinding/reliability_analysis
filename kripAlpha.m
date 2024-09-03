@@ -5,8 +5,8 @@ function [alpha] = kripAlpha(dat, scale, makeplot)
 % Where 
 %   dat:      N observers x M observations. For time series M = t.
 %   scale:    The method for calculating the error (i.e. delta) for
-%             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL, or
-%             ANGLE.
+%             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL,
+%             ANGLE or RATIO.
 %   makeplot: Plot the data, 1 or 0 (default = 0).
 
 % Calculate alpha with hist3 approach (absolute values)
@@ -21,7 +21,7 @@ end
 fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , size(dat, 2) )
 scale = lower(scale);
 
-if ~any(contains({'nominal','ordinal','interval','angle'}, scale))
+if ~any(contains({'nominal','ordinal','interval','angle','ratio'}, scale))
     error('Unknown scale of measurement');
 end
 
@@ -34,7 +34,7 @@ Y = repmat(1:size(dat,2), size(dat,1), 1);
 XY = [dat(:), Y(:)];
 dO = hist3(XY, {allvals, 1:tdim});
 dE = sum(dO,2);
-n__ = sum(sum(dO));              %length(dat(:));
+n__ = sum(dO(:));              %length(dat(:));
 nu_ = sum(dO,1);                 %size(dat,1);
 
 % Optional plot
@@ -59,20 +59,19 @@ for tt = 1:tdim
         idx = vidx(ii);
         c = allvals(idx);
         kvals = allvals(vidx(ii+1:end));
+
         switch scale
             case 'nominal'
-                deltas = ~(kvals==c);
+                deltas = delta_nominal(c, kvals);
             case 'ordinal'
-                deltas = nan(length(kvals),1);
-                for gg = 1:length(kvals)
-                    deltas(gg) = (sum(dE(ii:ii+gg)) - (dE(ii)+dE(ii+gg))/2)^2;
-                end                    
+                deltas = delta_ordinal(dE, vidx, ii, kvals);               
             case 'interval'
-                deltas = (kvals-c).^2;
+                deltas = delta_interval(c, kvals);
             case 'angle'
-                deltas = sin((kvals-c)/2).^2;
+                deltas = delta_angle(c, kvals);
+            case 'ratio'
+                deltas = delta_ratio(c, kvals);
         end
-
         nuc = dO(idx,tt);
         nuk = dO(vidx(ii+1:end), tt);
         Znucnuk(idx) = sum(nuc*nuk.*deltas);    
@@ -85,18 +84,19 @@ Zncnk = zeros(1, length(allvals));
 for ii = 1:length(allvals)-1
     c = allvals(ii);
     kvals = allvals(ii+1:end);
+    vidx = 1:length(allvals);
+
     switch scale
         case 'nominal'
-            deltas = ~(kvals==c);
+            deltas = delta_nominal(c, kvals);
         case 'ordinal'
-            deltas = nan(length(kvals),1);
-            for gg = 1:length(kvals)
-                deltas(gg) = (sum(dE(ii:ii+gg)) - (dE(ii)+dE(ii+gg))/2)^2;
-            end                    
+            deltas = delta_ordinal(dE, vidx, ii, kvals);               
         case 'interval'
-            deltas = (kvals-c).^2;
+            deltas = delta_interval(c, kvals);
         case 'angle'
-            deltas = sin((kvals-c)/2).^2;
+            deltas = delta_angle(c, kvals);
+        case 'ratio'
+            deltas = delta_ratio(c, kvals);
     end        
     n_c = dE(ii);
     n_k = dE(ii+1:end);
@@ -107,4 +107,27 @@ Do = sum(Zu);
 De = sum(Zncnk) / (n__-1);
 
 alpha = 1 - (Do/De);
+
+% Error functions
+function deltas = delta_nominal(c, kvals)
+    deltas = ~(kvals==c);
+end
+function deltas = delta_ordinal(dE, vidx, ii, kvals)
+    deltas = nan(length(kvals),1);
+    kidx = vidx(ii+1:end);
+    for gg = 1:length(kidx)
+        deltas(gg) = (sum(dE(vidx(ii):kidx(gg))) - (dE(vidx(ii))+dE(kidx(gg)))/2)^2;
+    end  
+end
+function deltas = delta_interval(c, kvals)
+    deltas = (kvals-c).^2;
+end
+    function deltas = delta_angle(c, kvals)
+    deltas = sin((kvals-c)/2).^2;
+end
+function deltas = delta_ratio(c, kvals)
+    deltas = ((c-kvals)/(c+kvals))^2;
+end
+
+end
 %END
