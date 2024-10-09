@@ -6,7 +6,7 @@ function [alpha] = kripAlphaN2fast(dat)
 %   dat:    N observers x M observations. For time series M = t. Note that
 %           this method only works for N=2.
 
-tic
+% tic
 if size(dat, 1) > 2
     error('Error: the \"N2fast\" method only works for N=2 observers. This dataset has %i.', size(dat, 1))
 else
@@ -18,7 +18,7 @@ if any(isnan(dat(:)))
 end
 
 % Get variables
-allvals = unique(dat(:));
+allvals = unique(dat(~isnan(dat)));
 n__ = length(dat(:));
 
 % Nominator
@@ -28,7 +28,7 @@ Zu = diff(dat).^2;                  %Interval
 dE = hist(dat(:), allvals)';        % Expected count
 
 Zncnk = zeros(1, length(allvals));
-for ii = 1:length(allvals)-1
+parfor ii = 1:length(allvals)-1
     c = allvals(ii);                % Real value
     kvals = allvals(ii+1:end);
     deltas = (kvals-c).^2;
@@ -39,11 +39,11 @@ for ii = 1:length(allvals)-1
 end
 
 
-Do = sum(Zu);
-De = sum(Zncnk) / (n__-1);
+Do = nansum(Zu);
+De = nansum(Zncnk) / (n__-1);
 
 alpha = 1 - (Do/De);
 
-dt = toc;
-fprintf('Calculation done (%.3f sec).\n', dt)
+% dt = toc;
+% fprintf('Calculation done (%.3f sec).\n', dt)
 %END

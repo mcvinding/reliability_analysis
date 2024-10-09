@@ -126,7 +126,7 @@ end
     deltas = sin((kvals-c)/2).^2;
 end
 function deltas = delta_ratio(c, kvals)
-    deltas = ((c-kvals)/(c+kvals))^2;
+    deltas = ((c-kvals)./(c+kvals)).^2;
 end
 
 end

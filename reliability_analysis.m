@@ -11,16 +11,15 @@ function [alpha] = reliability_analysis(X, method)
 %            'nominal': K's alpha for NOMINAL data using the exact method.
 %            'angle' : K's alpha for PHASE data using the exact method.
 %            'ratio' : K's alpha for RATIO data using the exact method.
-%            'alphaprime': approximation of coincidence matrices using
-%               density calculation by binning. Only suitable for 
-%               large datasets of INTERVAL data with arbitrary numerical 
-%               precision.
+%            'alphaprime': approximation of the observation matrices using 
+%               density calcu-lation by binning. Suitable for large datasets 
+%               of INTERVAL data with arbitrary numerical precision.
 %            'n2fast': fast computation of K's alpha for INTERVAL data with
-%               N = 2 observers and no missing cases.
+%               N=2 observers and no missing cases.
 %
 
 % This is a wrapper function, see KRIPALPHA, ALPHAPRIME, KRIPALPHAN2FAST
-% for proper documentation.
+% for further documentation.
 
 % Check input data
 if length(size(X)) > 2

@@ -11,6 +11,6 @@ dat = [A; B; C; D];
 alpha_int = kripAlpha(dat, 'interval');  % Assuming interval data
 alpha_ord = kripAlpha(dat, 'ordinal');   % Assuming ordinal data
 
-%% Approximation method (only interval and large datasets)
-% Does not really make sense for this data.
-alphap = alphaprime(dat); disp('done')                % Assuming interval data
+%% Approximation method
+% Only interval and large datasets. Does not really make sense for this data.
+alphap = alphaprime(dat);                % Assuming interval data

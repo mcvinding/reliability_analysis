@@ -9,7 +9,7 @@ function [alphaP] = alphaprime(dat, res)
 %   res:      Resolution of bins in pct of full data range (default = 0.01)
 
 %%
-tic
+% tic
 
 if ~exist('res', 'var')
     res = 0.01;     % 1% bin resolution
@@ -21,7 +21,11 @@ fprintf('This dataset has %i observers and %i data points.\n', size(dat, 1) , si
     
 % Init 
 N = round(1/res);                   % Number of bins
-allvals = unique(dat(:));           % All unique values
+allvals = unique(dat(~isnan(dat(:))));           % All unique values
+if N > length(allvals)
+    warning('Number of observed values (%i) is less than number of bins (%i)\nConsider using exact test instead.', length(allvals), N)
+%     N = length(allvals);
+end
 Nk = linspace(0+res, 100-res, N);
 
 % Find histogram probability function over time
@@ -31,7 +35,7 @@ tdim = size(dat, 2);                % "Time" axis (copy from real data)
 % Make histograms
 Y = repmat(1:size(dat, 2), size(dat, 1), 1);
 XY = [dat(:), Y(:)];
-dO = hist3(XY, {gridx, 1:tdim});    % Oberservation
+dO = hist3(XY, {gridx, 1:tdim});    % Observation
 dE = sum(dO, 2);                    % Expected
 
 n__ = sum(sum(dO));              %length(dat(:));
@@ -77,6 +81,6 @@ De = sum(Zncnk) / (n__-1);
 
 alphaP = 1 - (Do/De);
 
-dt = toc;
-fprintf('Calculation done (%.3f sec).\n', dt)
+% dt = toc;
+% fprintf('Calculation done (%.3f sec).\n', dt)
 %END       

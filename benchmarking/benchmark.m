@@ -1,12 +1,8 @@
 % Benchmarking: test how values of alpha are realted to %-agreement for
 % ordinal, 
-
-
-
-addpath('/home/mikkel/reliability_analysis')
-
-%% Settings
-outdir = '/home/mikkel/reliability_analysis/benchmarking/output';
+wrkdir = 'C:\Users\ncb623\reliability_analysis';
+outdir = fullfile(wrkdir, '/benchmarking/output');
+addpath(wrkdir)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nominal/binary data
@@ -33,9 +29,9 @@ for ee = 1:length(errPct)
             end
         end
     
-        dat = [truedat; errdat];
+        X = [truedat; errdat];
         
-        alph_nom1(ss,ee) = kripAlpha(dat, 'nominal');
+        alph_nom1(ss,ee) = kripAlpha(X, 'nominal');
     end
 end
 disp('done')
@@ -72,9 +68,10 @@ for ee = 1:length(errPct)
                dat2(slct2(ii)) = 1;
             end
         end
-        dat = [dat1; dat2];
+
+        X = [dat1; dat2];
         
-        alph_nom2(ss, ee) = kripAlpha(dat, 'nominal');
+        alph_nom2(ss, ee) = kripAlpha(X, 'nominal');
     end
 end
 disp('done')
@@ -112,9 +109,9 @@ for ee = 1:length(errPct)
             errdat(slct(ii)) = tmp(1);
         end
 
-        dat = [truedat; errdat];
+        X = [truedat; errdat];
         
-        alph_ord1(ss,ee) = kripAlpha(dat, 'ordinal');
+        alph_ord1(ss,ee) = kripAlpha(X, 'ordinal');
     end
 end
 disp('done')
@@ -144,9 +141,9 @@ for ee = 1:length(errPct)
             dat2(slct2(ii)) = tmp(1);
         end
 
-        dat = [dat1; dat2];
+        X = [dat1; dat2];
         
-        alph_ord2(ss,ee) = kripAlpha(dat, 'ordinal');
+        alph_ord2(ss,ee) = kripAlpha(X, 'ordinal');
     end
 end
 disp('done')
@@ -181,9 +178,9 @@ for ee = 1:length(err)
         errdatAdd = truedat + randn(1,length(t))*err(ee);
         errdatRep = truedat + randn(1,length(t))*err(ee);
 
-        dat = [truedat; errdat];
+        X = [truedat; errdat];
         
-        alph_int1(ss,ee) = kripAlpha(dat, 'interval');
+        alph_int1(ss,ee) = kripAlpha(X, 'interval');
     end
 end
 disp('done')
@@ -197,9 +194,9 @@ for ee = 1:length(err)
         dat1 = truedat + randn(1,length(t))*err(ee);
         dat2 = truedat + randn(1,length(t))*err(ee);
 
-        dat = [dat1; dat2];
+        X = [dat1; dat2];
         
-        alph_int2(ss,ee) = kripAlpha(dat, 'interval');
+        alph_int2(ss,ee) = kripAlpha(X, 'interval');
     end
 end
 disp('done')
@@ -208,6 +205,7 @@ disp('done')
 figure(3); hold on
 errorbar(err, mean(alph_int1), std(alph_int1), 'b', 'MarkerSize',12);
 errorbar(err, mean(alph_int2), std(alph_int2), 'r', 'MarkerSize',12);
+set(gcf, 'Position', [500, 500, 700, 500])
 
 %% One-sample: interval + replacement noise (no scaling)
 err = 0.0:0.01:0.5;  %  Percent disagreement
@@ -220,9 +218,9 @@ for ee = 1:length(err)
         rx = randperm(length(errdat));
         slct = rx(1:round(length(errdat)*err(ee)));
         errdat(slct) = (rand(1, length(slct))-0.5)*2;
-        dat = [truedat; errdat];
+        X = [truedat; errdat];
         
-        alph_int3(ss,ee) = kripAlpha(dat, 'interval');
+        alph_int3(ss,ee) = kripAlpha(X, 'interval');
     end
 end
 disp('done')
@@ -249,9 +247,9 @@ for ee = 1:length(err)
         dat1(slct1) = (rand(1, length(slct1))-0.5)*2;
         dat2(slct1) = (rand(1, length(slct2))-0.5)*2;
 
-        dat = [dat1; dat2];
+        X = [dat1; dat2];
         
-        alph_int4(ss,ee) = kripAlpha(dat, 'interval');
+        alph_int4(ss,ee) = kripAlpha(X, 'interval');
     end
 end
 disp('done')
