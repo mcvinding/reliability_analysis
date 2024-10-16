@@ -1,21 +1,19 @@
-function [alpha] = kripAlpha(dat, scale, makeplot)
+function [alpha, cfg] = kripAlpha(dat, scale)
 % Calculate Krippendorff's alpha using original approach.
 % Use as:
-%   alpha = kripAlpha(X, method, makeplot)
+%   [alpha, cfg] = kripAlpha(X, method, makeplot)
 % Where 
-%   dat:      N observers x M observations. For time series M = t.
+%   dat:      N observers x M observations. For time series M = t. Data
+%             must be numeric.
 %   scale:    The method for calculating the error (i.e. delta) for
 %             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL,
 %             ANGLE or RATIO.
-%   makeplot: Plot the data, 1 or 0 (default = 0).
 
 % Calculate alpha with hist3 approach (absolute values)
 
 % Check inputs
 if nargin < 2
     error('Error: must have argument SCALE')
-elseif nargin < 3
-    makeplot = 0;
 end
 
 fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , size(dat, 2) )
@@ -28,33 +26,27 @@ end
 % Get variables
 allvals = unique(dat(~isnan(dat)));
 if isa(allvals, 'logical'); allvals = int8(allvals); end
-tdim = size(dat, 2);
 
 Y = repmat(1:size(dat,2), size(dat,1), 1);
 XY = [dat(:), Y(:)];
-dO = hist3(XY, {allvals, 1:tdim});
-dE = sum(dO,2);
-n__ = sum(dO(:));              %length(dat(:));
-nu_ = sum(dO,1);                 %size(dat,1);
-
-% Optional plot
-if makeplot
-    figure;
-    subplot(1,20,1:3); plot(dE, allvals); axis tight; hold on
-    subplot(1,20,5:20); imagesc(1:size(dat,2),allvals,dO); colorbar
-    set(gca,'YDir','normal')
-end
+dO = hist3(XY, {allvals, 1:size(dat, 2)});
+dE = sum(dO(:,sum(dO)>1),2);
+nu_ = sum(dO, 1);
+n__ = sum(nu_(nu_>1));
+clear XY Y
 
 % nominator
-Zu = zeros(1, tdim);
-for tt = 1:tdim
+Zu = 0;
+for tt = 1:length(nu_)
     if ~(nu_(tt) > 1)
         continue
     end
+
     % Find values
-    Znucnuk = zeros(1, length(allvals)-1);  % Initiate with zeroes.
-    vidx = find(dO(:,tt));                  % Find only index with observed values, all else will be zero anyway
+    Znucnuk = 0;            % Initiate as zero.
+    vidx = find(dO(:,tt));  % Find only index with observed values, all else will be zero anyway
     
+    deltas = [];
     for ii = 1:length(vidx)-1
         idx = vidx(ii);
         c = allvals(idx);
@@ -74,13 +66,15 @@ for tt = 1:tdim
         end
         nuc = dO(idx,tt);
         nuk = dO(vidx(ii+1:end), tt);
-        Znucnuk(idx) = sum(nuc*nuk.*deltas);    
+        Znucnuk = Znucnuk + sum(nuc*nuk.*deltas);
     end   
-    Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
+
+%     Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
+    Zu = Zu + sum(Znucnuk./(nu_(tt)-1));
 end
 
 % denominator
-Zncnk = zeros(1, length(allvals));
+Zncnk = 0;
 for ii = 1:length(allvals)-1
     c = allvals(ii);
     kvals = allvals(ii+1:end);
@@ -100,13 +94,17 @@ for ii = 1:length(allvals)-1
     end        
     n_c = dE(ii);
     n_k = dE(ii+1:end);
-    Zncnk(ii) = sum(n_c*n_k.*deltas);
+    Zncnk = Zncnk + sum(n_c*n_k.*deltas);
 end
 
-Do = sum(Zu);
-De = sum(Zncnk) / (n__-1);
+alpha = 1 - (Zu/Zncnk) * (n__-1);
 
-alpha = 1 - (Do/De);
+% Variables for bootstrapping
+cfg.n__     = n__;
+cfg.mu      = nu_;
+cfg.dE      = dE;
+cfg.allvals = allvals;
+cfg.scale   = scale;
 
 % Error functions
 function deltas = delta_nominal(c, kvals)

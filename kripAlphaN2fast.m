@@ -1,10 +1,10 @@
-function [alpha] = kripAlphaN2fast(dat)
+function [alpha, cfg] = kripAlphaN2fast(dat)
 % Calculate Krippendorff's alpha N=2 fast method
 % Use as:
-%   alpha = kripAlpha(X)
+%   [alpha, cfg] = kripAlpha(dat)
 % Where 
 %   dat:    N observers x M observations. For time series M = t. Note that
-%           this method only works for N=2.
+%           this method only works for N=2
 
 % tic
 if size(dat, 1) > 2
@@ -19,15 +19,17 @@ end
 
 % Get variables
 allvals = unique(dat(~isnan(dat)));
-n__ = length(dat(:));
+n__ = length(dat(~isnan(dat)));
 
 % Nominator
-Zu = diff(dat).^2;                  %Interval
+Zd = diff(dat).^2;                  % Interval
+Zu = sum(Zd(~isnan(Zd)));
 
 % denominator
 dE = hist(dat(:), allvals)';        % Expected count
 
-Zncnk = zeros(1, length(allvals));
+% Zncnk = zeros(1, length(allvals));
+Zncnk = 0;
 parfor ii = 1:length(allvals)-1
     c = allvals(ii);                % Real value
     kvals = allvals(ii+1:end);
@@ -35,14 +37,20 @@ parfor ii = 1:length(allvals)-1
         
     n_c = dE(ii);
     n_k = dE(ii+1:end);
-    Zncnk(ii) = sum(n_c*n_k.*deltas);
+    Zncnk = Zncnk + sum(n_c*n_k.*deltas);
 end
 
+% Do = nansum(Zu);
+% De = nansum(Zncnk) / (n__-1);
 
-Do = nansum(Zu);
-De = nansum(Zncnk) / (n__-1);
+alpha = 1 - (Zu/Zncnk) * (n__-1);
 
-alpha = 1 - (Do/De);
+% Variables for bootstrapping
+cfg.n__     = n__;
+cfg.mu      = sum(~isnan(dat));
+cfg.dE      = dE;
+cfg.allvals = allvals;
+cfg.scale   = 'n2fast';
 
 % dt = toc;
 % fprintf('Calculation done (%.3f sec).\n', dt)
