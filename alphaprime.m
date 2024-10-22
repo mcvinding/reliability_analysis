@@ -3,10 +3,11 @@ function [alpha, cfg] = alphaprime(dat, res)
 % for faster computation on large datasets.
 %
 % Use as:
-%   [alphaP] = alphaprime(dat, res, intpmtd, makeplot))
+%   [alphaP, cfg] = alphaprime(dat, res)
 % Where 
 %   dat:      N observers x M observations. For time series M = t
-%   res:      Resolution of bins in pct of full data range (default = 0.01)
+%   res:      Resolution of bins in pct of full data range (default = 0.01, 
+%               i.e., 1% of range(dat) resolution)
 
 %%
 % tic
