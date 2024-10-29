@@ -13,9 +13,9 @@ else
     fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
 end
 
-if any(isnan(dat(:)))
-    error('Error: the \"N2fast\" method is invalid for data with missing cases.\nThis data has %i missing cases.', sum(isnan(dat(:))))
-end
+% if any(isnan(dat(:)))
+%     error('Error: the \"N2fast\" method is invalid for data with missing cases.\nThis data has %i missing cases.', sum(isnan(dat(:))))
+% end
 
 % Get variables
 allvals = unique(dat(~isnan(dat)));

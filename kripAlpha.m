@@ -16,14 +16,19 @@ if nargin < 2
     error('Error: must have argument SCALE')
 end
 
-fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , size(dat, 2) )
 scale = lower(scale);
 
-if ~any(contains({'nominal','ordinal','interval','angle','ratio'}, scale))
+if ~any(contains({'nominal','ordinal','interval','angle','angle_rad','angle_deg','ratio'}, scale))
     error('Unknown scale of measurement');
 end
 
+if strcmp(scale, 'angle')
+    scale = 'angle_deg';
+end
+
 % Get variables
+fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , size(dat, 2) )
+
 allvals = unique(dat(~isnan(dat)));
 if isa(allvals, 'logical'); allvals = int8(allvals); end
 
@@ -59,8 +64,10 @@ for tt = 1:length(nu_)
                 deltas = delta_ordinal(dE, vidx, ii, kvals);               
             case 'interval'
                 deltas = delta_interval(c, kvals);
-            case 'angle'
-                deltas = delta_angle(c, kvals);
+            case 'angle_deg'
+                deltas = delta_angle_deg(c, kvals);
+            case 'angle_rad'
+                deltas = delta_angle_rad(c, kvals);
             case 'ratio'
                 deltas = delta_ratio(c, kvals);
         end
@@ -120,8 +127,11 @@ end
 function deltas = delta_interval(c, kvals)
     deltas = (kvals-c).^2;
 end
-    function deltas = delta_angle(c, kvals)
-    deltas = sin((kvals-c)/2).^2;
+function deltas = delta_angle_deg(c, kvals)
+    deltas = sin(pi*(c-kvals)/360).^2;
+end
+function deltas = delta_angle_rad(c, kvals)
+    deltas = sin(pi*(c-kvals)/(2*pi)).^2;
 end
 function deltas = delta_ratio(c, kvals)
     deltas = ((c-kvals)./(c+kvals)).^2;
