@@ -94,8 +94,10 @@ for ii = 1:length(allvals)-1
             deltas = delta_ordinal(dE, vidx, ii, kvals);               
         case 'interval'
             deltas = delta_interval(c, kvals);
-        case 'angle'
-            deltas = delta_angle(c, kvals);
+        case 'angle_deg'
+            deltas = delta_angle_deg(c, kvals);
+        case 'angle_rad'
+            deltas = delta_angle_rad(c, kvals);
         case 'ratio'
             deltas = delta_ratio(c, kvals);
     end        
