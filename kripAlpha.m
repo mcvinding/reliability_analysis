@@ -7,7 +7,7 @@ function [alpha, cfg] = kripAlpha(dat, scale)
 %             must be numeric.
 %   scale:    The method for calculating the error (i.e. delta) for
 %             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL,
-%             ANGLE or RATIO.
+%             ANGLE_DEG, ANLGE_RAD or RATIO.
 
 % Calculate alpha with hist3 approach (absolute values)
 

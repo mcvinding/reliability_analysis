@@ -1,6 +1,6 @@
 %% Example #2: Dataframe from Hayes & Krippendorff (2007)
 % Get alpha assuming data is INTERVAL, ORDINAL, or NOMINAL. Use bootstrap 
-% method to get 95% CI for alpha.   
+% method to get 95% CI for alpha. Dataframe from Hayes & Krippendorff (2007)
 
 A = [1 1 2 nan 0 0 1 1 2 2 nan 0 1 3 1 1 2 1 1 0 0 0 2 0 1 0 0 1 1 1 1 2 2 3 2 2 2 2 2 1];
 B = [1 1 3 0 0 0 0 nan 2 1 1 0 2 3 1 1 1 2 1 0 0 0 3 0 2 1 0 2 1 1 1 1 2 2 2 2 2 2 2 1];

@@ -20,7 +20,7 @@ dE     = cfg.dE;
 
 No = sum(((mu-1).*mu)/2);
 
-% Calculate traditional dE
+% Calculate traditional D_e
 Zncnkd = 0;
 for i = 1:length(dE)
     c = vals(i);
@@ -40,8 +40,10 @@ for i = 1:length(dE)
             end
         case {'interval','n2fast','alphaprime','prime'}
             deltas = delta_interval(c, vals);
-        case 'angle'
-            deltas = delta_angle(c, vals);
+        case {'angle', 'angle_deg'}
+            deltas = delta_angle_deg(c, vals);
+        case 'angle_rad'
+            deltas = delta_angle_rad(c, vals);
         case 'ratio'
             deltas = delta_ratio(c, vals);
     end
@@ -51,9 +53,10 @@ end
 De = Zncnkd / (n__*(n__-1));
 
 %% Get all pairs
-% For N=2 this will be the same as actual data, possibly implement this.
+% For N=2 this will be the same as actual data.
 if strcmp(scale, 'n2fast')
     pairs = dat';
+% elseif any(strcmp(scale, {'alphaprime','prime'}))
 else
     pairs = [];
     for u = 1:length(mu)
@@ -84,8 +87,10 @@ for p = 1:length(pairs)
             end
         case {'interval','n2fast','alphaprime','prime'}
             delta2(p) = delta_interval(pairs(p,1), pairs(p,2));
-        case 'angle'
-            delta2(p) = delta_angle(pairs(p,1), pairs(p,2));
+        case {'angle', 'angle_deg'}
+            delta2(p) = delta_angle_deg(pairs(p,1), pairs(p,2));
+        case 'angle_rad'
+            delta2(p) = delta_angle_deg(pairs(p,1), pairs(p,2));
         case 'ratio'
             delta2(p) = delta_ratio(pairs(p,1), pairs(p,2));
     end
@@ -117,8 +122,11 @@ end
 function deltas = delta_interval(c, kvals)
     deltas = (kvals-c).^2;
 end
-    function deltas = delta_angle(c, kvals)
-    deltas = sin((kvals-c)/2).^2;
+function deltas = delta_angle_deg(c, kvals)
+    deltas = sin(pi*(c-kvals)/360).^2;
+end
+function deltas = delta_angle_rad(c, kvals)
+    deltas = sin(pi*(c-kvals)/(2*pi)).^2;
 end
 function deltas = delta_ratio(c, kvals)
     deltas = ((c-kvals)./(c+kvals)).^2;

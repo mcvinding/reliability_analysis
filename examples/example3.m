@@ -4,7 +4,7 @@ close all
 %% Generate two time-series
 StopTime    = 2;                 % seconds 
 fs          = 1000;              % Sampling frequency (samples per second) 
-err         = 0.35;               % Noise scaling
+err         = 0.35;              % Noise scaling
 dt          = 1/fs;              % seconds per sample 
 t           = (dt:dt:StopTime);  % seconds 
 Freq        = 3;                 % Sine wave frequency (Hz) 
@@ -13,7 +13,7 @@ x = sin(2*pi*Freq*t)+randn(1,length(t))*err;
 y = sin(2*pi*Freq*t)+randn(1,length(t))*err;
 dat = [x; y];   % N observers vs M samples
 
-plot(dat')
+figure; plot(dat')
 
 %% Get Alpha
 [alpha_int, boot_int] = reliability_analysis(dat, 'interval', 20000);   % Exact method

@@ -26,10 +26,13 @@ allvals = unique(dat(~isnan(dat(:))));           % All unique values
 if N > length(allvals)
     warning('Number of observed values (%i) is less than number of bins (%i)\nConsider using exact test instead.', length(allvals), N)
 end
-Nk = linspace(0+res, 100-res, N);
 
-% Find histogram probability function over time
-gridx = prctile(allvals, Nk)';      % Data axis. Find percentiles based on resolution.
+% % Usisng percentiles
+% Nk = linspace(0+res, 100-res, N);
+% gridx = prctile(allvals, Nk)';      % Data axis. Find percentiles based on resolution.
+
+% Using evenly spaced 
+gridx = linspace(min(allvals), max(allvals), N)';
 tdim = size(dat, 2);                % "Time" axis (copy from real data)
 
 % Make histograms
@@ -88,7 +91,6 @@ cfg.mu      = nu_;
 cfg.dE      = dE;
 cfg.allvals = gridx;
 cfg.scale   = 'alphaprime';
-
 
 % dt = toc;
 % fprintf('Calculation done (%.3f sec).\n', dt)

@@ -6,22 +6,23 @@ function [alpha, boot] = reliability_analysis(X, method, bootstrap)
 %   X:          N observers x M observations. For time series M = t.
 %   method:     The method for calculating the error (i.e. delta) for
 %               Krippendorpf's Alpha. Options can be:
-%                 'interval': alpha for INTERVAL data using the exact method.
-%                 'ordinal': alpha for ORDINAL data using the exact method.
-%                 'nominal': alpha for NOMINAL data using the exact method.
-%                 'angle' : alpha for PHASE data using the exact method.
-%                 'ratio' : alpha for RATIO data using the exact method.
+%                 'interval': alpha for INTERVAL data.
+%                 'ordinal': alpha for ORDINAL data.
+%                 'nominal': alpha for NOMINAL data.
+%                 'ratio' : alpha for RATIO data.
+%                 'angle_deg' : alpha for PHASE data (in degrees).
+%                 'angle_rad' : alpha for PHASE data (in radians).
+%                 'n2fast': faster computation of alpha for INTERVAL data 
+%                   with only N=2 observers.
 %                 'alphaprime': approximation of the observation matrices 
 %                   using calculation by binning. Suitable for large datasets 
 %                   of INTERVAL data with arbitrary numerical precision.
-%                'n2fast': fast computation of alpha for INTERVAL data with
-%                 N=2 observers and no missing cases.
 %   bootstrap:  (int) Calculate bootstrapping distribution for calculating 
 %               CI of alpha. Number of bootstrapping. 0 = do not calculate 
 %               bootstrapping (default).
 
-% This is a wrapper function, see KRIPALPHA, ALPHAPRIME, KRIPALPHAN2FAST
-% for further documentation.
+% This is a wrapper function, see KRIPALPHA, ALPHAPRIME, KRIPALPHAN2FAST,
+%   and BOOTSTRAP_ALPHA for further documentation.
 
 % Check input
 if nargin < 2
@@ -41,7 +42,7 @@ end
 
 % Check methos
 method = lower(method);
-if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast', 'angle', 'ratio'}))
+if ~any(strcmp(method, {'alphaprime', 'prime', 'interval', 'ordinal', 'nominal', 'n2fast', 'angle', 'angle_deg', 'angle_rad', 'ratio'}))
     error('Error: method \"%s\" is not supported', upper(method))
 end
 
@@ -51,7 +52,7 @@ switch(method)
         disp('Calculating Alpha with denisty approximation...\n')
         [alpha, cfg] = alphaprime(X);
         
-    case {'interval', 'ordinal', 'nominal', 'ratio', 'angle'}
+    case {'interval', 'ordinal', 'nominal', 'ratio', 'angle', 'angle_rad', 'angle_deg'}
         fprintf('Calculating Alpha for %s data with exact precision...\n', upper(method))
         [alpha, cfg] = kripAlpha(X, method);
         
