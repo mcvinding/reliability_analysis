@@ -90,7 +90,7 @@ for p = 1:length(pairs)
         case {'angle', 'angle_deg'}
             delta2(p) = delta_angle_deg(pairs(p,1), pairs(p,2));
         case 'angle_rad'
-            delta2(p) = delta_angle_deg(pairs(p,1), pairs(p,2));
+            delta2(p) = delta_angle_rad(pairs(p,1), pairs(p,2));
         case 'ratio'
             delta2(p) = delta_ratio(pairs(p,1), pairs(p,2));
     end
