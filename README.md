@@ -16,7 +16,7 @@ Use as:
 ALPHA = reliability_analysis(DATA, METHOD)
 ````
 
-Where `DATA` is the reliability data in the format *N* x *M*, where *N* is the number of "observers" (*N* > 2) and *M* is the number of data points. For neural time series data *M* = time. You might need to concatenate or "flatten" your data, so all observation for one observer is one vector. Each row in the data frame represents one observer. Each column represents the same unit of observation. E.g., the first column could be the first time point across all observers.
+Where `DATA` is the reliability data in the format *N* x *M*, where *N* is theÂ number of "observers" (*N* > 1) and *M* is the number of data points. For neural time series data *M* = time. You might need to concatenate or "flatten" your data, so all observation for one observer is one vector. Each row in the data frame represents one observer. Each column represents the same unit of observation. E.g., the first column could be the first time point across all observers.
 
 Use `METHOD` to declare the type of data: `nominal`, `ordinal`, `interval`, `ratio`, and `phase`, or use either the reduced but faster algorithm for cases where *N* = 2 and data is interval ( `N2fast` ) or the approximation algorithm ( `alphaprime` ), which is useful for large datasets with arbitrary numerical precision. For more information about methods, please refer to the companion paper (TBA) or function documentation.
 
@@ -34,7 +34,7 @@ The main function is a wrapper that calls the different functions to calculate a
 * `kripAlpha.m` : Krippendorff's Alpha for *interval*, *ordinal*, *nominal*, *ratio*, or *phase* data using exact caluclation of Alpha.
 * `alphaprime.m` : Approximation of Krippendorff's Alpha for interval data with arbitary precision.
 * `kripAlpha2fast.m` : Fast, exact calculation of Krippendorff's Alpha for interval data with two observers (*N* = 2).
-* `bootstrap_alpha.m` : Run the bootstrapping procedure based on the output from either of the functions above. 
+* `bootstrap_alpha.m` : Run theÂ bootstrapping procedure based on the output from either of the functions above. 
 
 See the documentation and the companion paper for more details on the implementations.
 
