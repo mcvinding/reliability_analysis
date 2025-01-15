@@ -23,7 +23,12 @@ n__ = length(dat(~isnan(dat)));
 
 % Nominator
 Zd = diff(dat).^2;                  % Interval
+Zd = dat(1,:)==dat(2,:);            % Nominal
+
+
 Zu = sum(Zd(~isnan(Zd)));
+
+
 
 % denominator
 dE = hist(dat(:), allvals)';        % Expected count
