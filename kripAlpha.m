@@ -1,7 +1,7 @@
 function [alpha, cfg] = kripAlpha(dat, scale)
 % Calculate Krippendorff's alpha using original approach.
 % Use as:
-%   [alpha, cfg] = kripAlpha(X, method, makeplot)
+%   [alpha, cfg] = kripAlpha(X, method)
 % Where 
 %   dat:      N observers x M observations. For time series M = t. Data
 %             must be numeric.
