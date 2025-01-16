@@ -1,18 +1,19 @@
 function [alpha, cfg] = kripAlpha(dat, scale)
 % Calculate Krippendorff's alpha using original approach.
 % Use as:
-%   [alpha, cfg] = kripAlpha(X, method)
+%   [alpha, cfg] = kripAlpha(X, method, progress)
 % Where 
 %   dat:      N observers x M observations. For time series M = t. Data
 %             must be numeric.
 %   scale:    The method for calculating the error (i.e. delta) for
 %             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL,
 %             ANGLE_DEG, ANLGE_RAD or RATIO.
+%
 % Output:
 %   alpha:    The Alpha value
 %   cfg:      Setting for bootstrap procedure.
 
-% Calculate alpha with hist3 approach (absolute values)
+% Calculate alpha with hist approach (absolute value)
 
 % Check inputs
 if nargin < 2
@@ -54,18 +55,12 @@ for tt = 1:length(nu_)
     if ~(nu_(tt) > 1)
         continue
     end
-%     tic
-%     waitbar(tt/length(nu_), f)
 
     % Find values
-    Znucnuk = 0;            % Initiate as zero.
-%     vidx = find(dO(:,tt));  % Find only index with observed values, all else will be zero anyway
-%     [~, vidx] = ismember(dat(~isnan(dat(:,tt)),tt), allvals); % Find index of observed values
-%     allu = unique(dat(~isnan(dat(:,tt)),tt))
-
     dOu = hist(dat(:,tt),allvals);
     vidx = find(dOu);
 
+    Znucnuk = 0;            % Initiate as zero.
     deltas = zeros(length(vidx) -1, 1);   % Preallocate
     for ii = 1:length(vidx)-1
         idx = vidx(ii);
@@ -87,7 +82,7 @@ for tt = 1:length(nu_)
                 deltas = delta_ratio(c, kvals);
         end
         nuc = dOu(idx); %sum(dat(:,tt) == c); % dO(idx,tt);
-        nuk = dOu(vidx(ii+1:end));
+        nuk = dOu(vidx(ii+1:end))';
         Znucnuk = Znucnuk + sum(nuc*nuk.*deltas);
     end   
 
