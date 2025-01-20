@@ -1,4 +1,4 @@
-function [alpha, cfg] = kripAlphaN2fast(dat)
+function [alpha, cfg] = kripAlphaN2fast(dat, method)
 % Calculate Krippendorff's alpha N=2 fast method
 % Use as:
 %   [alpha, cfg] = kripAlpha(dat, method)
@@ -12,11 +12,15 @@ function [alpha, cfg] = kripAlphaN2fast(dat)
 %                 'n2fast_nominal': faster computation of alpha for NOMINAL 
 %                   data with N=2 observers.
 
+if nargin < 2
+    method = 'n2fast';
+end
 if size(dat, 1) > 2
     error('Error: the \"N2fast\" method only works for N=2 observers. This dataset has %i.', size(dat, 1))
 else
     fprintf('This dataset has %i observers and %i observations.\n',size(dat, 1) , size(dat, 2) )
 end
+
 
 % if any(isnan(dat(:)))
 %     error('Error: the \"N2fast\" method is invalid for data with missing cases.\nThis data has %i missing cases.', sum(isnan(dat(:))))
