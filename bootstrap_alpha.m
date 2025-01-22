@@ -115,7 +115,7 @@ for b = 1:nboot
     bootalphas(b) = 1-dsum;
 end
 
-%% Error functions
+% Error functions
 function deltas = delta_nominal(c, kvals)
     deltas = ~(kvals==c);
 end

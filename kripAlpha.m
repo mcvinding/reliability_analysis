@@ -8,8 +8,12 @@ function [alpha, cfg] = kripAlpha(dat, scale)
 %   scale:    The method for calculating the error (i.e. delta) for
 %             Krippendorpf's Alpha. Can be NOMINAL, ORDINAL, INTERVAL,
 %             ANGLE_DEG, ANLGE_RAD or RATIO.
+%
+% Output:
+%   alpha:    The Alpha value
+%   cfg:      Setting for bootstrap procedure.
 
-% Calculate alpha with hist3 approach (absolute values)
+% Calculate alpha with hist approach (absolute value)
 
 % Check inputs
 if nargin < 2
@@ -32,13 +36,18 @@ fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , siz
 allvals = unique(dat(~isnan(dat)));
 if isa(allvals, 'logical'); allvals = int8(allvals); end
 
-Y = repmat(1:size(dat,2), size(dat,1), 1);
-XY = [dat(:), Y(:)];
-dO = hist3(XY, {allvals, 1:size(dat, 2)});
-dE = sum(dO(:,sum(dO)>1),2);
-nu_ = sum(dO, 1);
+% Y = repmat(1:size(dat,2), size(dat,1), 1);
+% XY = [dat(:), Y(:)];
+% dO = hist3(XY, {allvals, 1:size(dat, 2)});
+% dE = sum(dO(:,sum(dO)>1),2);
+
+dE = hist(dat(:), allvals)';        % Expected count
+% nu_ = sum(dO, 1);
+nu_ = sum(~isnan(dat));
 n__ = sum(nu_(nu_>1));
-clear XY Y
+% clear XY Y
+
+% f = waitbar(0,'Calculating...');
 
 % nominator
 Zu = 0;
@@ -48,10 +57,11 @@ for tt = 1:length(nu_)
     end
 
     % Find values
+    dOu = hist(dat(:,tt),allvals);
+    vidx = find(dOu);
+
     Znucnuk = 0;            % Initiate as zero.
-    vidx = find(dO(:,tt));  % Find only index with observed values, all else will be zero anyway
-    
-    deltas = [];
+    deltas = zeros(length(vidx) -1, 1);   % Preallocate
     for ii = 1:length(vidx)-1
         idx = vidx(ii);
         c = allvals(idx);
@@ -71,13 +81,15 @@ for tt = 1:length(nu_)
             case 'ratio'
                 deltas = delta_ratio(c, kvals);
         end
-        nuc = dO(idx,tt);
-        nuk = dO(vidx(ii+1:end), tt);
+        nuc = dOu(idx); %sum(dat(:,tt) == c); % dO(idx,tt);
+        nuk = dOu(vidx(ii+1:end))';
         Znucnuk = Znucnuk + sum(nuc*nuk.*deltas);
     end   
 
 %     Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
     Zu = Zu + sum(Znucnuk./(nu_(tt)-1));
+%     dt = toc;
+%     disp(dt)
 end
 
 % denominator
@@ -107,6 +119,8 @@ for ii = 1:length(allvals)-1
 end
 
 alpha = 1 - (Zu/Zncnk) * (n__-1);
+
+% close(f)
 
 % Variables for bootstrapping
 cfg.n__     = n__;

@@ -11,7 +11,6 @@ E = [2 nan nan 0 0 0 1 nan 2 nan nan nan nan 3 1 1 2 nan nan 0 nan 0 nan nan 2 n
 dat = [A; B; C; D; E];
 
 %% Get Krippendorff's Alpha
-
 [alpha_int, boot_int] = reliability_analysis(dat, 'interval', 20000);  % Assuming interval data
 [alpha_ord, boot_ord] = reliability_analysis(dat, 'ordinal', 20000);   % Assuming ordinal data
 [alpha_nom, boot_nom] = reliability_analysis(dat, 'nominal', 20000);   % Assuming nominal data
