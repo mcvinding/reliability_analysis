@@ -11,3 +11,4 @@ dat = [A; B; C; D];
 alpha_int = reliability_analysis(dat, 'interval');      % Assuming interval data
 alpha_ord = reliability_analysis(dat, 'ordinal');       % Assuming ordinal data
 alpha_nom = reliability_analysis(dat, 'nominal');       % Assuming nominal data
+alpha_rat = reliability_analysis(dat, 'ratio');         % Assuming ratio data
