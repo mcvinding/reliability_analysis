@@ -21,7 +21,6 @@ if nargin < 2
 end
 
 scale = lower(scale);
-
 if ~any(contains({'nominal','ordinal','interval','angle','angle_rad','angle_deg','ratio'}, scale))
     error('Unknown scale of measurement');
 end
@@ -36,16 +35,12 @@ fprintf('This dataset has %i observers and %i data points.\n',size(dat, 1) , siz
 allvals = unique(dat(~isnan(dat)));
 if isa(allvals, 'logical'); allvals = int8(allvals); end
 
-% Y = repmat(1:size(dat,2), size(dat,1), 1);
-% XY = [dat(:), Y(:)];
-% dO = hist3(XY, {allvals, 1:size(dat, 2)});
-% dE = sum(dO(:,sum(dO)>1),2);
-
-dE = hist(dat(:), allvals)';        % Expected count
-% nu_ = sum(dO, 1);
 nu_ = sum(~isnan(dat));
 n__ = sum(nu_(nu_>1));
-% clear XY Y
+
+% allvals = unique(dat(~isnan(dat(:,nu_>1)));
+if isa(allvals, 'logical'); allvals = int8(allvals); end
+dE = histc(reshape(dat(:, nu_>1), 1, []), allvals)';        % Expected count
 
 % f = waitbar(0,'Calculating...');
 
@@ -86,10 +81,7 @@ for tt = 1:length(nu_)
         Znucnuk = Znucnuk + sum(nuc*nuk.*deltas);
     end   
 
-%     Zu(tt) = sum(Znucnuk./(nu_(tt)-1));
     Zu = Zu + sum(Znucnuk./(nu_(tt)-1));
-%     dt = toc;
-%     disp(dt)
 end
 
 % denominator
@@ -119,8 +111,6 @@ for ii = 1:length(allvals)-1
 end
 
 alpha = 1 - (Zu/Zncnk) * (n__-1);
-
-% close(f)
 
 % Variables for bootstrapping
 cfg.n__     = n__;
