@@ -40,7 +40,7 @@ n__ = sum(nu_(nu_>1));
 
 % allvals = unique(dat(~isnan(dat(:,nu_>1)));
 if isa(allvals, 'logical'); allvals = int8(allvals); end
-dE = histc(reshape(dat(:, nu_>1), 1, []), allvals)';        % Expected count
+dE = hist(reshape(dat(:, nu_>1), 1, []), allvals)';        % Expected count
 
 % f = waitbar(0,'Calculating...');
 
@@ -76,7 +76,7 @@ for tt = 1:length(nu_)
             case 'ratio'
                 deltas = delta_ratio(c, kvals);
         end
-        nuc = dOu(idx); %sum(dat(:,tt) == c); % dO(idx,tt);
+        nuc = dOu(idx); %sum(dat(:,tt) == c);
         nuk = dOu(vidx(ii+1:end))';
         Znucnuk = Znucnuk + sum(nuc*nuk.*deltas);
     end   

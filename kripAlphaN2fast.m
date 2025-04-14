@@ -1,4 +1,4 @@
-function [alpha, cfg] = kripAlphaN2fast(dat, methhod)
+function [alpha, cfg] = kripAlphaN2fast(dat, method)
 % Calculate Krippendorff's alpha N=2 fast method
 % Use as:
 %   [alpha, cfg] = kripAlpha(dat, method)
@@ -13,7 +13,7 @@ function [alpha, cfg] = kripAlphaN2fast(dat, methhod)
 %                   data with N=2 observers.
 
 if nargin < 2
-    methhod = 'n2fast';
+    method = 'n2fast';
 end
 if size(dat, 1) > 2
     error('Error: the \"N2fast\" method only works for N=2 observers. This dataset has %i.', size(dat, 1))
@@ -30,7 +30,7 @@ allvals = unique(dat(~isnan(dat)));
 n__ = length(dat(~isnan(dat)));
 
 % Nominator
-switch methhod
+switch method
     case {'n2fast_interval', 'n2fast'}
         Zd = diff(dat).^2;                  % Interval
     case 'n2fast_nominal'
@@ -46,7 +46,7 @@ Zncnk = 0;
 parfor ii = 1:length(allvals)-1
     c = allvals(ii);                % Real value
     kvals = allvals(ii+1:end);
-    switch methhod
+    switch method
         case {'n2fast_interval', 'n2fast'}
             deltas = (kvals-c).^2;
         case 'n2fast_nominal'
