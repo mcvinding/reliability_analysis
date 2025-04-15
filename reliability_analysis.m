@@ -30,6 +30,7 @@ function [alpha, boot] = reliability_analysis(X, method, bootstrap)
 %  method:      'prime': same as 'alphaprime'.
 %               'n2fast': same as 'n2fast_interval'. Kept for backwards
 %                 compatability.
+%               'angle': same as 'angle_deg'.Kept for backwards compatability.
 
 % Check input
 if nargin < 2
@@ -39,7 +40,7 @@ elseif nargin < 3
 end
 
 if bootstrap < 0
-    error('Error: Number of bootstraps must be positive or zero for no bootstrapping.')
+    error('Error: Number of bootstraps cannot be negative.')
 end
 
 % Check input data
@@ -77,7 +78,7 @@ if bootstrap > 0
 
     ci = prctile(boot, [2.5, 97.5]); sig=0.8;
     fprintf('  Alpha = %.3f (95%%CI: %.3f-%.3f [%i bootstraps])\n', alpha, ci(1), ci(2), bootstrap)
-    fprintf('  Probability of Alpha >= %.2f: %.3f (p-value = %.3f)\n', sig, mean(boot > 0.8), 1-mean(boot > 0.8));
+    fprintf('  Probability of Alpha >= %.2f: %.3f (P-value = %.3f)\n', sig, mean(boot > 0.8), 1-mean(boot > 0.8));
 end
 
 %END

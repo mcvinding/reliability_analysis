@@ -22,7 +22,7 @@ sig = 0.8;                          % Critical cutoff for "significance"
 disp('INTERVAL:')
 ci = prctile(boot_int, [2.5, 97.5]);
 fprintf('Alpha = %.3f (CI: %.3f-%.3f)\n', alpha_int, ci(1), ci(2))
-fprintf(['Alpha being above threshold of %.2f:\n' ...
+fprintf(['Alpha above threshold of %.2f:\n' ...
          '      P = %.3f\n'], sig, mean(boot_int < 0.8));
 figure; histogram(boot_int, 30, 'Normalization', 'pdf');
 xline(alpha_int, 'k', 'LineWidth',2);
@@ -42,7 +42,7 @@ xline(sig, 'r--', 'LineWidth',2);
 disp('NOMINAL:')
 ci = prctile(boot_nom, [2.5, 97.5]);
 fprintf('Alpha = %.3f (CI: %.3f-%.3f)\n', alpha_nom, ci(1), ci(2))
-fprintf(['Alpha being above threshold of %.2f:\n' ...
+fprintf(['Alpha above threshold of %.2f:\n' ...
          '      P = %.3f\n'], sig, mean(boot_nom < 0.8));
 figure; histogram(boot_nom, 30, 'Normalization', 'pdf');
 xline(alpha_nom, 'k', 'LineWidth',2);

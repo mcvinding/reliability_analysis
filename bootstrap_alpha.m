@@ -18,7 +18,7 @@ vals   = cfg.allvals;
 scale  = cfg.scale;
 dE     = cfg.dE; 
 
-No = sum(((mu-1).*mu)/2);
+No = sum(((mu-1).*mu)/2);   % Number of pairs
 
 % Calculate traditional D_e
 Zncnkd = 0;
@@ -69,7 +69,7 @@ else
         end
     end
 end
-clear dat
+% clear dat
 
 %% Make a sample of deltas
 delta2 = zeros(length(pairs),1);
@@ -103,14 +103,11 @@ for b = 1:nboot
     dsum = 0;
     for u = 1:length(mu)
         pairr = (mu(u)-1)*mu(u)/2;
-        for ii = 1:pairr
-            r = randi(No);                  % Random sample
-            if r <= length(delta2)
-                Er = 2 * delta2(r) / (n__ * De);
-                d = Er/(mu(u)-1);
-                dsum = dsum + d;
-            end
-        end
+        r = randi(No,pairr,1);                  % Random sample
+        r = r(r<=length(delta2));
+        Er = 2 * delta2(r) / (n__ * De);
+        d = Er/(mu(u)-1);
+        dsum = dsum + sum(d);
     end
     bootalphas(b) = 1-dsum;
 end
