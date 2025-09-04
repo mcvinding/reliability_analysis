@@ -1,50 +1,71 @@
-# Reliability Analysis: a tool for assessing reliability between measurements.
+# Reliability Analysis: A Unified Tool for Assessing Measurement Reliability
 
-This repository provides a unified MATLAB tool for reliability tests of neuroimaging data of various types that can be either discrete or continuous data. The test calculates Krippendorff's Alpha or an approximation that is analogous to Krippendorff's Alpha. All code is implemented in MATLAB and requires no further dependencies. This implementation is designed to run fast and handle large datasets, which is necessary for neuroimaging data such as (f)MRI, EEG, MEG, PET, etc.
+This repository provides a comprehensive MATLAB toolbox for conducting reliability analysis on neuroimaging data and other datasets, whether discrete or continuous. The toolbox implements Krippendorff's Alpha and related reliability metrics, supporting a variety of data types and analysis scenarios.
 
-The methods and implementation are described in the companion paper:
+The methodology and implementation details are described in the companion paper:
 
 > Vinding, M. C. (2025). A Unified Framework for Reliability Analysis in Neuroimaging With Krippendorff’s α. *International Journal of Imaging Systems and Technology, 35(5)*, e70192. https://doi.org/10.1002/ima.70192
 
-Please refer to the companion paper for information on the implemented methods, their usage, performance, and interpretation.
+Consult the companion paper for guidance on the available methods, their application, performance, and interpretation.
 
 ## Usage
-Use the main function `reliability_analysis` to calculate Alpha using the appropriate type of test.
 
-Use as:
-````Matlab
+The primary function is `reliability_analysis`, which computes Krippendorff's Alpha using the appropriate method for your data type.
+
+**Basic usage:**
+```matlab
 ALPHA = reliability_analysis(DATA, METHOD)
-````
+```
+- `DATA`: An N x M matrix, where *N* is the number of "observers" (*N* > 1) and *M* is the number of measurements or data points (e.g., time samples in time series).
+- `METHOD`: A string specifying the data type. Valid options:
+  - `'nominal'`
+  - `'ordinal'`
+  - `'interval'`
+  - `'ratio'`
+  - `'phase_rad'` or `'phase_deg'`
 
-Where `DATA` is the reliability data in the format *N* x *M*, where *N* is the number of "observers" (*N* > 1) and *M* is the number of data points. For neural time series data *M* = time. You might need to concatenate or "flatten" your data so that all observations for one observer are in one vector. Each row in the data frame represents one observer. Each column represents the same unit of observation. E.g., the first column could be the first time point across all observers.
+For datasets with exactly two observers (*N* = 2) and interval data, you can use the optimized fast algorithm:
+```matlab
+ALPHA = reliability_analysis(DATA, 'N2fast')
+```
 
-Use `METHOD` to declare the type of data: `nominal`, `ordinal`, `interval`, `ratio`, or `phase_rad`/`phase_deg`, or use either the faster algorithm for cases where *N* = 2 and data is interval ( `N2fast` ) or ordinal (`N2fast_ordinal`), or the approximation algorithm ( `alphaprime` ), which is useful for large datasets with arbitrary numerical precision. For more information about methods, please refer to the companion paper (Vinding, 2025) and the function documentation.
+**Bootstrapping confidence intervals:**
 
-It is also possible to get bootstrap confidence intervals of Alpha values based on the procedure described by Hayes & Krippendorff (2007) in the following way:
-````Matlab
+You can obtain bootstrap confidence intervals for Alpha values as described by Hayes & Krippendorff (2007):
+```matlab
 [ALPHA, BOOTS] = reliability_analysis(DATA, METHOD, BOOTSTRAP)
-````
-Where `BOOTSTRAP` indicates the size of the bootstrapping distribution (`BOOTSTRAP = 0` means no bootstrapping) and `BOOTS` is a vector of the bootstrapped alpha values.
+```
+- `BOOTSTRAP`: Number of bootstrap samples (e.g., 1000). Set to `0` for no bootstrapping.
+- `BOOTS`: A vector of bootstrapped Alpha values.
 
 ## Examples
-The folder Examples provides three examples of how to calculate Alpha for different types of data. Use these scripts as blueprints to start reliability analysis on your own data.
 
-## Content
-The main function is a wrapper that calls the different functions to calculate alpha and the bootstrapping procedure. For more documentation and options, see the individual functions:
-* `kripAlpha.m` : Krippendorff's Alpha for *interval*, *ordinal*, *nominal*, *ratio*, or *phase* data using the exact caluclation of Alpha.
-* `alphaprime.m` : Approximation of Krippendorff's Alpha for large datasets with arbitrary numerical precision based on binning the data.
-* `kripAlpha2fast.m` : Fast, exact calculation of Krippendorff's Alpha for interval or ordinal data with two observers (*N* = 2).
-* `bootstrap_alpha.m` : Run the bootstrapping procedure based on the output from either of the functions above. 
+The `Examples` folder contains scripts demonstrating how to calculate Alpha for different data types. These include:
+- `example_nominal.m`: Reliability analysis for nominal-scaled data.
+- `example_interval.m`: Reliability analysis for interval-scaled data.
+- `example_phase.m`: Reliability analysis for circular (phase) data.
 
-See the documentation and the companion paper for more details on the implementations.
+Use these scripts as templates for analyzing your own data. All examples use the `reliability_analysis` function and correspond directly to the code provided in this repository.
+
+## Toolbox Contents
+
+The main function (`reliability_analysis.m`) is a wrapper that delegates computation to specialized functions:
+- `kripAlpha.m`: Exact calculation of Krippendorff's Alpha for interval, ordinal, nominal, ratio, or phase data.
+- `alphaprime.m`: Approximate Alpha for large datasets with arbitrary numerical precision using data binning.
+- `kripAlpha2fast.m`: Fast, exact calculation for interval or ordinal data with two observers (*N* = 2).
+- `bootstrap_alpha.m`: Bootstrapping procedure for estimating confidence intervals.
+
+See the documentation in each function and the companion paper for further details.
 
 ## Background
-For more information on Krippendorff's Alpha, see: 
-* Hayes, A.F. & Krippendorff, K. (2007). Answering the call for a standard reliability measure for coding data. *Communication Methods and Measures*, 1, 77-89
-* Krippendorff, K. (2018). *Content analysis: An introduction to its methodology* (Fourth Edition). SAGE.
-* Vinding, M. C. (2025). A unified framework for reliability analysis in neuroimaging with Krippendorff’s α. *PsyArXiv* https://doi.org/10.31234/osf.io/ptxv6
 
-## Contact and contribution
-The code is contiously maintained and kept up to date. If you have suggestions for improvements or additinal featuers, you are wellcome to contact me by email or open an GitHub issue. All feedback and ctroibutions are wellcome.
+For more information on Krippendorff's Alpha and its application, see:
+- Hayes, A. F. & Krippendorff, K. (2007). Answering the call for a standard reliability measure for coding data. *Communication Methods and Measures*, 1, 77–89.
+- Krippendorff, K. (2018). *Content Analysis: An Introduction to Its Methodology* (Fourth Edition). SAGE.
+- Vinding, M. C. (2025). A Unified Framework for Reliability Analysis in Neuroimaging With Krippendorff’s α. *International Journal of Imaging Systems and Technology, 35(5)*, e70192. https://doi.org/10.1002/ima.70192
 
-Email: mvi@psy.ku.dk
+## Contact and Contribution
+
+The code is actively maintained. If you have suggestions for improvements or requests for additional features, please contact me via email or open a GitHub issue. All feedback and contributions are welcome!
+
+**Email:** mvi@psy.ku.dk
