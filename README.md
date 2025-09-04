@@ -4,7 +4,7 @@ This repository provides a unified MATLAB tool for reliability tests of neuroima
 
 The methods and implementation are described in the companion paper:
 
-> Vinding, M. C. (2025). A unified framework for reliability analysis in neuroimaging with Krippendorff’s α. *PsyArXiv* https://doi.org/10.31234/osf.io/ptxv6
+> Vinding, M. C. (2025). A Unified Framework for Reliability Analysis in Neuroimaging With Krippendorff’s α. *International Journal of Imaging Systems and Technology, 35(5)*, e70192. https://doi.org/10.1002/ima.70192
 
 Please refer to the companion paper for information on the implemented methods, their usage, performance, and interpretation.
 
