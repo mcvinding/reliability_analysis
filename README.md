@@ -2,15 +2,15 @@
 
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2019b+-blue.svg)](https://www.mathworks.com/products/matlab.html)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-10.31234%2Fosf.io%2Fptxv6-blue)](https://doi.org/10.31234/osf.io/ptxv6)
+[![DOI](https://img.shields.io/badge/DOI-10.31234%2Fosf.io%2Fptxv6-blue)](https://doi.org/10.1002/ima.70192)
 
-This repository provides a unified MATLAB tool for reliability tests of neuroimaging data of various types that can be either discrete or continuous data. The test calculates Krippendorff's Alpha or an approximation that is analogous to Krippendorff's Alpha. All code is implemented in MATLAB and requires no further dependencies. This implementation is designed to run fast and handle large datasets, which is necessary for neuroimaging data such as (f)MRI, EEG, MEG, PET, etc.
+This repository provides a comprehensive MATLAB toolbox for conducting reliability analysis on neuroimaging data and other datasets, whether discrete or continuous. The toolbox implements Krippendorff's Alpha and related reliability metrics, supporting a variety of data types and analysis scenarios.
 
-The methods and implementation are described in the companion paper:
+The methodology and implementation details are described in the companion paper:
 
-> Vinding, M. C. (2025). A unified framework for reliability analysis in neuroimaging with Krippendorff’s α. *PsyArXiv* https://doi.org/10.31234/osf.io/ptxv6
+> Vinding, M. C. (2025). A Unified Framework for Reliability Analysis in Neuroimaging With Krippendorff’s α. *International Journal of Imaging Systems and Technology, 35(5)*, e70192. https://doi.org/10.1002/ima.70192
 
-Please refer to the companion paper for information on the implemented methods, their usage, performance, and interpretation.
+Consult the companion paper for guidance on the available methods, their application, performance, and interpretation.
 
 ## Citation
 
@@ -69,14 +69,17 @@ alpha = reliability_analysis(data, 'n2fast_nominal');   % Fast nominal
 ```
 
 ## Usage
-Use the main function `reliability_analysis` to calculate Alpha using the appropriate type of test.
 
 Use as:
 ```matlab
 ALPHA = reliability_analysis(DATA, METHOD)
 ```
 
-Where `DATA` is the reliability data in the format *N* x *M*, where *N* is the number of "observers" (*N* > 1) and *M* is the number of data points. For neural time series data *M* = time. You might need to concatenate or "flatten" your data so that all observations for one observer are in one vector. Each row in the data frame represents one observer. Each column represents the same unit of observation. E.g., the first column could be the first time point across all observers.
+
+For datasets with exactly two observers (*N* = 2) and interval data, you can use the optimized fast algorithm:
+```matlab
+ALPHA = reliability_analysis(DATA, 'N2fast')
+```
 
 **Method Selection Guide:**
 
@@ -102,7 +105,7 @@ It is also possible to get bootstrap confidence intervals of Alpha values based 
 ```matlab
 [ALPHA, BOOTS] = reliability_analysis(DATA, METHOD, BOOTSTRAP)
 ```
-Where `BOOTSTRAP` indicates the size of the bootstrapping distribution (`BOOTSTRAP = 0` means no bootstrapping) and `BOOTS` is a vector of the bootstrapped alpha values.
+Where `BOOTSTRAP` indicates the size of the bootstrapping distribution (`BOOTSTRAP = 0` means no bootstrapping) and `BOOTS` is an array of the bootstrapped alpha values.
 
 ## Examples
 
@@ -132,7 +135,15 @@ The main function is a wrapper that calls the different functions to calculate a
 * `kripAlphaN2fast.m` : Fast, exact calculation of Krippendorff's Alpha for interval or ordinal data with two observers (*N* = 2).
 * `bootstrap_alpha.m` : Run the bootstrapping procedure based on the output from either of the functions above. 
 
-See the documentation and the companion paper for more details on the implementations.
+## Toolbox Contents
+
+The main function (`reliability_analysis.m`) is a wrapper that delegates computation to specialized functions:
+- `kripAlpha.m`: Exact calculation of Krippendorff's Alpha for interval, ordinal, nominal, ratio, or phase data.
+- `alphaprime.m`: Approximate Alpha for large datasets with arbitrary numerical precision using data binning.
+- `kripAlpha2fast.m`: Fast, exact calculation for interval or ordinal data with two observers (*N* = 2).
+- `bootstrap_alpha.m`: Bootstrapping procedure for estimating confidence intervals.
+
+See the documentation in each function and the companion paper for further details.
 
 ## Troubleshooting
 
@@ -144,14 +155,14 @@ See the documentation and the companion paper for more details on the implementa
 
 **Low or negative Alpha values**
 - This may indicate poor reliability between observers
-- Alpha values range from -∞ to 1, where 1 = perfect agreement
+- Alpha values range from -1 to 1, where 1 = perfect agreement
 - Values ≥ 0.8 are typically considered reliable
 - Values < 0.67 suggest questionable reliability
+- Negative values indicate systematic disagreement
 
 **Memory issues with large datasets**
 - Use `'alphaprime'` method for very large datasets
 - Consider using `'N2fast'` for two-observer scenarios
-- Process data in chunks if necessary
 
 **NaN values in data**
 - Missing values are handled automatically
@@ -164,10 +175,6 @@ See the documentation and the companion paper for more details on the implementa
 - Bootstrap calculations can be computationally intensive - start with smaller bootstrap samples (e.g., 1000) for testing
 
 ## Background
-For more information on Krippendorff's Alpha, see: 
-* Hayes, A.F. & Krippendorff, K. (2007). Answering the call for a standard reliability measure for coding data. *Communication Methods and Measures*, 1, 77-89
-* Krippendorff, K. (2018). *Content analysis: An introduction to its methodology* (Fourth Edition). SAGE.
-* Vinding, M. C. (2025). A unified framework for reliability analysis in neuroimaging with Krippendorff’s α. *PsyArXiv* https://doi.org/10.31234/osf.io/ptxv6
 
 ## Contact and Contribution
 
@@ -183,3 +190,9 @@ The code is continuously maintained and kept up to date. If you have suggestions
 ### Contact
 **Email:** mvi@psy.ku.dk  
 **GitHub:** [@mcvinding](https://github.com/mcvinding)
+
+## Read more
+For more information on Krippendorff's Alpha and its application, see:
+- Hayes, A. F. & Krippendorff, K. (2007). Answering the call for a standard reliability measure for coding data. *Communication Methods and Measures*, 1, 77–89.
+- Krippendorff, K. (2018). *Content Analysis: An Introduction to Its Methodology* (Fourth Edition). SAGE.
+- Vinding, M. C. (2025). A Unified Framework for Reliability Analysis in Neuroimaging With Krippendorff’s α. *International Journal of Imaging Systems and Technology, 35(5)*, e70192. https://doi.org/10.1002/ima.70192
