@@ -1,8 +1,8 @@
 # Reliability Analysis: A Tool for Assessing Reliability Between Measurements
 
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2019b+-blue.svg)](https://www.mathworks.com/products/matlab.html)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![DOI](https://img.shields.io/badge/DOI-10.31234%2Fosf.io%2Fptxv6-blue)](https://doi.org/10.1002/ima.70192)
+[![License](https://img.shields.io/badge/License-GPL_3.0-green.svg)](LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-10.1002%2Fima.70192-blue)](https://doi.org/10.1002/ima.70192)
 
 This repository provides a comprehensive MATLAB toolbox for conducting reliability analysis on neuroimaging data and other datasets, whether discrete or continuous. The toolbox implements Krippendorff's Alpha and related reliability metrics, supporting a variety of data types and analysis scenarios.
 
