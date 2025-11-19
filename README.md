@@ -20,9 +20,9 @@ If you use this tool in your research, please cite the companion paper:
 @article{vinding2025unified,
   title={A unified framework for reliability analysis in neuroimaging with Krippendorff's α},
   author={Vinding, Mikkel C.},
-  journal={PsyArXiv},
+  journal={International Journal of Imaging Systems and Technology, 35(5)},
   year={2025},
-  doi={10.31234/osf.io/ptxv6}
+  doi={doi.org/10.1002/ima.70192}
 }
 ```
 
@@ -172,13 +172,13 @@ See the documentation in each function and the companion paper for further detai
 
 - Use `'N2fast'` methods when you have exactly 2 observers
 - Use `'alphaprime'` for datasets with millions of observations
-- Bootstrap calculations can be computationally intensive - start with smaller bootstrap samples (e.g., 1000) for testing
+- Bootstrap calculations can be computationally intensive - start with smaller bootstrap samples (e.g., 100) for testing
 
 ## Background
 
 ## Contact and Contribution
 
-The code is continuously maintained and kept up to date. If you have suggestions for improvements or additional features, you are welcome to contact me by email or open a GitHub issue. All feedback and contributions are welcome.
+The code is continuously maintained and kept up to date. If you have suggestions for improvements or additional features, you are welcome to contact me by email or open a GitHub issue. All feedback and contributions are welcome. Copilot (AI) was used to assist creating this README.
 
 ### Ways to Contribute
 - 🐛 Report bugs via [GitHub Issues](https://github.com/mcvinding/reliability_analysis/issues)
